@@ -1,0 +1,29 @@
+@startuml
+
+@hide empty fields
+@hide empty methods
+
+class Locale {
+    + id
+    + iso
+}
+
+class Area {
+    + id
+    + code
+    + parent_area
+}
+
+Area }-- Area
+
+class AreaTranslation {
+    + id
+    + area_id
+    + locale_id
+    + name
+}
+
+AreaTranslation }-- Area
+AreaTranslation }-- Locale
+
+@enduml
