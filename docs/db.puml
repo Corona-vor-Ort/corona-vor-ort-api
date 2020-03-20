@@ -26,4 +26,19 @@ class AreaTranslation {
 AreaTranslation }-- Area
 AreaTranslation }-- Locale
 
+class DataSource {
+    + id
+    + url
+}
+
+class DataSourceTranslation {
+    + id
+    + data_source_id
+    + locale_id
+    + name
+}
+
+DataSourceTranslation }-- DataSource
+DataSourceTranslation }-- Locale
+
 @enduml
