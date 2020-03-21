@@ -8,6 +8,7 @@ variables:
 composer install:
   only:
     - master
+    - web
   image: php:7.2
   stage: build
   before_script:
@@ -29,6 +30,7 @@ Deploy Staging:
     - staging-runner
   only:
     - master
+    - web
   stage: deploy
   dependencies:
     - composer install
