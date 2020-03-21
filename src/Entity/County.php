@@ -19,6 +19,12 @@ class County
 
     /**
      * @Groups("default")
+     * @ORM\Column(type="string", length=255)
+     */
+    private $ags;
+
+    /**
+     * @Groups("default")
      * @ORM\Column(type="uuid")
      */
     private $country_id;
@@ -31,14 +37,14 @@ class County
 
     /**
      * @Groups("county.country")
-     * @ORM\ManyToOne(targetEntity="App\Entity\Country", inversedBy="counties")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Country", inversedBy="counties", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $country;
 
     /**
      * @Groups("county.state")
-     * @ORM\ManyToOne(targetEntity="App\Entity\State", inversedBy="counties")
+     * @ORM\ManyToOne(targetEntity="App\Entity\State", inversedBy="counties", cascade={"persist"})
      */
     private $state;
 
@@ -64,6 +70,18 @@ class County
         $this->translations = new ArrayCollection();
         $this->cities = new ArrayCollection();
         $this->link_meldungen = new ArrayCollection();
+    }
+
+    public function getAgs(): ?string
+    {
+        return $this->ags;
+    }
+
+    public function setAgs(string $ags): self
+    {
+        $this->ags = $ags;
+
+        return $this;
     }
 
     public function getCountryId()

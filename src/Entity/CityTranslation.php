@@ -35,14 +35,14 @@ class CityTranslation
 
     /**
      * @Groups("cityTranslation.city")
-     * @ORM\ManyToOne(targetEntity="App\Entity\City", inversedBy="translations")
+     * @ORM\ManyToOne(targetEntity="App\Entity\City", inversedBy="translations", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $city;
 
     /**
      * @Groups("cityTranslation.locale")
-     * @ORM\ManyToOne(targetEntity="App\Entity\Locale", inversedBy="cityTranslations")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Locale", inversedBy="cityTranslations", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $locale;

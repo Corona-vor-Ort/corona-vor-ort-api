@@ -88,21 +88,26 @@ class WarnungBundCrawlerCommand extends Command
 
             foreach ($entry['info'][0]['area'][0]['geocode'] as $county_arn) {
                 $county = $this->countyRepo->findByArn(substr($county_arn['value'], 0, 5));
-                $meldung->addLinkCounty($county);
+                if ($county !== null) {
+                    $meldung->addLinkCounty($county);
+                }
             }
             
             $this->entityManager->persist($meldung);
             $this->entityManager->flush();
             
-            if (array_key_exists('references', $entryWWWW)) {
+            if (array_key_exists('references', $entry)) {
                 $origin = $this->meldungRepo->findByBbkIdentifier($entry['identifier']);
                 
                 foreach(explode(",", str_replace(" ", ",", $entry['references'])) as $ref) {
-                    $meldungsreferenz = new Meldungsreferenz();
-                    $meldungsreferenz->setOrigin($origin);
-                    $meldungsreferenz->setTarget($this->meldungRepo->findByBbkIdentifier($ref));
-                    $this->entityManager->persist($meldungsreferenz);
-                    $this->entityManager->flush();
+                    $target = $this->meldungRepo->findByBbkIdentifier($ref);
+                    if ($target !== null) {
+                        $meldungsreferenz = new Meldungsreferenz();
+                        $meldungsreferenz->setOrigin($origin);
+                        $meldungsreferenz->setTarget($target);
+                        $this->entityManager->persist($meldungsreferenz);
+                        $this->entityManager->flush();
+                    }
                 }
             }
         }
