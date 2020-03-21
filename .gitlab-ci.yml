@@ -37,4 +37,4 @@ Deploy Staging:
     - cp -a src/ $TARGET_DIR
     - cp -a templates/ $TARGET_DIR
     - php7.2 bin/console cache:clear
-    - php7.2 bin/console bin/console doctrine:migrations:migrate
+    - php7.2 bin/console doctrine:migrations:migrate
