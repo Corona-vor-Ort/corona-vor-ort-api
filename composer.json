@@ -6,7 +6,6 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "friendsofsymfony/rest-bundle": "^3.0@dev",
-        "jms/serializer-bundle": "^3.5@dev",
         "ramsey/uuid-doctrine": "^1.6",
         "symfony/console": "5.0.*",
         "symfony/debug-pack": "^1.0",
@@ -15,6 +14,7 @@
         "symfony/framework-bundle": "5.0.*",
         "symfony/maker-bundle": "^1.14",
         "symfony/orm-pack": "^1.0",
+        "symfony/serializer-pack": "dev-master",
         "symfony/twig-pack": "^1.0",
         "symfony/yaml": "5.0.*"
     },
