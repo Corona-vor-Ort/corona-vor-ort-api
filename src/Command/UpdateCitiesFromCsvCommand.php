@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Command;
+use App\Entity\Country;
+use Doctrine\ORM\EntityManagerInterface;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -8,6 +10,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+
 
 class UpdateCitiesFromCsvCommand extends Command
 {
@@ -30,22 +33,41 @@ class UpdateCitiesFromCsvCommand extends Command
             $url = $input->getOption('url');
         }
 
-        $csv_arr = [];
-        $row = 0;
-        $file = fopen ( $url, "r");
-        while (($data = fgetcsv($file, 1000, ",")) !== FALSE) {
-            $num = count($data);
-            if($row == 0) {
-                $header = $data;
-            } else {
-                $csv_arr[] = $data;
-            }
-            $row ++;
-        }
-        fclose($file);
+        $data = $this->parseCsvToArray($url);
+
+        var_dump($data);
 
         $io->success('CSV from remote opened successfully');
 
         return 0;
+    }
+
+    private function parseCsvToArray($url) {
+        $csv_arr = [];
+        $i = 0;
+        $file = fopen ( $url, "r");
+        while (($data = fgetcsv($file, 1000, ",")) !== FALSE) {
+            $num = count($data);
+            if($i == 0) {
+                $header = $data;
+            } else {
+                foreach($data as $key => $column) {
+                    $row[$header[$key]] = $column;
+                }
+                $csv_arr[] = $row;
+            }
+            $i ++;
+        }
+        fclose($file);
+        return $csv_arr;
+    }
+
+    private function addCountryToDatabase($name, $locale) {
+        $entityManager = $this->getDoctrine()->getManager();
+        $country = new Country();
+        $country->setName($name);
+        $country->setLocale($locale);
+        $entityManager->persist($country);
+        $entityManager->flush();
     }
 }
