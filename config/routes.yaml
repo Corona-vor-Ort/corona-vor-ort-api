@@ -20,3 +20,8 @@ counties:
     type:     rest
     prefix:   /api
     resource: App\Controller\CountyController
+
+cities:
+    type:     rest
+    prefix:   /api
+    resource: App\Controller\CityController
