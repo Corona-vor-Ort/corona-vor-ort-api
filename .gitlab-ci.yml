@@ -43,4 +43,4 @@ Deploy Staging:
     - cp -a vendor/ $TARGET_DIR
     - cp -a .env $TARGET_DIR
     - php7.2 bin/console cache:clear
-    - php7.2 bin/console doctrine:migrations:migrate
+    - php7.2 bin/console --no-interaction doctrine:migrations:migrate
