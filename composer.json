@@ -1,6 +1,6 @@
 {
+    "name": "wirvsvirus/staatlichekommunikation",
     "type": "project",
-    "license": "proprietary",
     "require": {
         "php": "^7.2.5",
         "ext-ctype": "*",
