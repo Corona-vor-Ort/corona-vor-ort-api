@@ -45,6 +45,7 @@ class CountryController implements ClassResourceInterface
                 'default',
                 'country.translations',
                 'countryTranslation.locale',
+                'country.states',
             ]
         ]);
 

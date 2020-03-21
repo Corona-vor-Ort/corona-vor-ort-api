@@ -29,9 +29,16 @@ class Country
      */
     private $translations;
 
+    /**
+     * @Groups("country.states")
+     * @ORM\OneToMany(targetEntity="App\Entity\State", mappedBy="country", orphanRemoval=true)
+     */
+    private $states;
+
     public function __construct()
     {
         $this->translations = new ArrayCollection();
+        $this->states = new ArrayCollection();
     }
 
     public function getIso(): ?string
@@ -71,6 +78,37 @@ class Country
             // set the owning side to null (unless already changed)
             if ($translation->getCountry() === $this) {
                 $translation->setCountry(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|State[]
+     */
+    public function getStates(): Collection
+    {
+        return $this->states;
+    }
+
+    public function addState(State $state): self
+    {
+        if (!$this->states->contains($state)) {
+            $this->states[] = $state;
+            $state->setCountry($this);
+        }
+
+        return $this;
+    }
+
+    public function removeState(State $state): self
+    {
+        if ($this->states->contains($state)) {
+            $this->states->removeElement($state);
+            // set the owning side to null (unless already changed)
+            if ($state->getCountry() === $this) {
+                $state->setCountry(null);
             }
         }
 
