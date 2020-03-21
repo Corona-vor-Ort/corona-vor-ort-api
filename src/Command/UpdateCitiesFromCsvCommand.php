@@ -2,6 +2,7 @@
 
 namespace App\Command;
 use App\Entity\Country;
+use App\Entity\City;
 use Doctrine\ORM\EntityManagerInterface;
 
 use Symfony\Component\Console\Command\Command;
@@ -35,6 +36,15 @@ class UpdateCitiesFromCsvCommand extends Command
 
         $data = $this->parseCsvToArray($url);
 
+        // ToDo: persist data to database
+        /* foreach($data as $line) {
+            $this->addCityToDatabase(
+                $line['ort'], 
+                country_id, 
+                locale_id
+            );
+        } */
+
         var_dump($data);
 
         $io->success('CSV from remote opened successfully');
@@ -67,6 +77,16 @@ class UpdateCitiesFromCsvCommand extends Command
         $country = new Country();
         $country->setName($name);
         $country->setLocale($locale);
+        $entityManager->persist($country);
+        $entityManager->flush();
+    }
+
+    private function addCityToDatabase($name, $country_id, $locale_id) {
+        $entityManager = $this->getDoctrine()->getManager();
+        $country = new City();
+        $country->setName($name);
+        $country->setCountry($country_id);
+        $country->setLocale($locale_id);
         $entityManager->persist($country);
         $entityManager->flush();
     }
