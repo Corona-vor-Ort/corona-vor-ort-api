@@ -1,12 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\Command;
+
 use App\Entity\Country;
 use App\Entity\City;
 use Doctrine\ORM\EntityManagerInterface;
-
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -28,66 +27,31 @@ class UpdateCitiesFromCsvCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $url = "https://www.suche-postleitzahl.org/download_files/public/zuordnung_plz_ort_landkreis.csv";
+        $url = 'https://www.suche-postleitzahl.org/download_files/public/zuordnung_plz_ort_landkreis.csv';
 
         if ($input->getOption('url')) {
             $url = $input->getOption('url');
         }
 
-        $data = $this->parseCsvToArray($url);
-
-        // ToDo: persist data to database
-        /* foreach($data as $line) {
-            $this->addCityToDatabase(
-                $line['ort'], 
-                country_id, 
-                locale_id
-            );
-        } */
-
-        var_dump($data);
-
-        $io->success('CSV from remote opened successfully');
-
-        return 0;
-    }
-
-    private function parseCsvToArray($url) {
-        $csv_arr = [];
-        $i = 0;
-        $file = fopen ( $url, "r");
-        while (($data = fgetcsv($file, 1000, ",")) !== FALSE) {
-            $num = count($data);
-            if($i == 0) {
-                $header = $data;
-            } else {
-                foreach($data as $key => $column) {
-                    $row[$header[$key]] = $column;
-                }
-                $csv_arr[] = $row;
-            }
-            $i ++;
+        foreach ($this->iterateItems($url) as $item) {
+            $io->table(array_keys($item), [$item]);
         }
+    }
+
+    protected function iterateItems(string $url): \Generator
+    {
+        $file = fopen ( $url, 'r');
+        $header = null;
+
+        while (($data = fgetcsv($file, 1000, ',')) !== FALSE) {
+            if ($header === null) {
+                $header = $data;
+                continue;
+            }
+
+            yield array_combine($header, $data);
+        }
+
         fclose($file);
-        return $csv_arr;
-    }
-
-    private function addCountryToDatabase($name, $locale) {
-        $entityManager = $this->getDoctrine()->getManager();
-        $country = new Country();
-        $country->setName($name);
-        $country->setLocale($locale);
-        $entityManager->persist($country);
-        $entityManager->flush();
-    }
-
-    private function addCityToDatabase($name, $country_id, $locale_id) {
-        $entityManager = $this->getDoctrine()->getManager();
-        $country = new City();
-        $country->setName($name);
-        $country->setCountry($country_id);
-        $country->setLocale($locale_id);
-        $entityManager->persist($country);
-        $entityManager->flush();
     }
 }
