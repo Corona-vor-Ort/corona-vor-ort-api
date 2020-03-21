@@ -33,6 +33,8 @@ Deploy Staging:
   dependencies:
     - composer install
   script:
+    - rm -r $TARGET_DIR/src
+    - rm -r $TARGET_DIR/vendor
     - cp -a bin/ $TARGET_DIR
     - cp -a config/ $TARGET_DIR
     - cp -a public/ $TARGET_DIR
@@ -40,5 +42,6 @@ Deploy Staging:
     - cp -a templates/ $TARGET_DIR
     - cp -a vendor/ $TARGET_DIR
     - cp -a .env $TARGET_DIR
+    - cd $TARGET_DIR
     - php7.2 bin/console cache:clear
     - php7.2 bin/console --no-interaction doctrine:migrations:migrate
