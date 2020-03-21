@@ -57,7 +57,7 @@ class UpdateCitiesFromCsvCommand extends Command
     {
         $this
             ->setDescription('Fetches Data from https://www.suche-postleitzahl.org/download_files/public/zuordnung_plz_ort_landkreis.csv and adds it to database.')
-            ->addOption('url', null, InputOption::VALUE_NONE, 'URL to CSV-File to fetch data from')
+            ->addOption('url', null, InputOption::VALUE_OPTIONAL, 'URL to CSV-File to fetch data from')
         ;
     }
 
