@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Support\EntityId;
 use App\Support\EntityTimestamps;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -39,6 +41,17 @@ class City
      * @ORM\JoinColumn(nullable=false)
      */
     private $county;
+
+    /**
+     * @Groups("city.translations")
+     * @ORM\OneToMany(targetEntity="App\Entity\CityTranslation", mappedBy="city", orphanRemoval=true)
+     */
+    private $translations;
+
+    public function __construct()
+    {
+        $this->translations = new ArrayCollection();
+    }
 
     public function getAgs(): ?string
     {
@@ -84,6 +97,37 @@ class City
     public function setCounty(?County $county): self
     {
         $this->county = $county;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|CityTranslation[]
+     */
+    public function getTranslations(): Collection
+    {
+        return $this->translations;
+    }
+
+    public function addTranslation(CityTranslation $translation): self
+    {
+        if (!$this->translations->contains($translation)) {
+            $this->translations[] = $translation;
+            $translation->setCity($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTranslation(CityTranslation $translation): self
+    {
+        if ($this->translations->contains($translation)) {
+            $this->translations->removeElement($translation);
+            // set the owning side to null (unless already changed)
+            if ($translation->getCity() === $this) {
+                $translation->setCity(null);
+            }
+        }
 
         return $this;
     }

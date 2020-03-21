@@ -83,4 +83,16 @@ class City {
 
 City }-- County
 
+class CityTranslation {
+    + id
+    + city_id
+    + locale_id
+    + name
+    + created_at
+    + updated_at
+}
+
+CityTranslation }-- City
+CityTranslation }-- Locale
+
 @enduml
