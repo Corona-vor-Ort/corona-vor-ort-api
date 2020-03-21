@@ -5,7 +5,10 @@
         "php": "^7.2.5",
         "ext-ctype": "*",
         "ext-iconv": "*",
+        "friendsofsymfony/rest-bundle": "^3.0@dev",
+        "nelmio/api-doc-bundle": "^3.6@dev",
         "ramsey/uuid-doctrine": "^1.6",
+        "symfony/asset": "5.0.*",
         "symfony/console": "5.0.*",
         "symfony/debug-pack": "^1.0",
         "symfony/dotenv": "5.0.*",
@@ -13,6 +16,7 @@
         "symfony/framework-bundle": "5.0.*",
         "symfony/maker-bundle": "^1.14",
         "symfony/orm-pack": "^1.0",
+        "symfony/serializer-pack": "dev-master",
         "symfony/twig-pack": "^1.0",
         "symfony/yaml": "5.0.*"
     },
@@ -63,5 +67,6 @@
             "allow-contrib": false,
             "require": "5.0.*"
         }
-    }
+    },
+    "minimum-stability": "dev"
 }
