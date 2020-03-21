@@ -65,17 +65,22 @@ class UpdateCitiesFromCsvCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         $url = 'https://www.suche-postleitzahl.org/download_files/public/zuordnung_plz_ort_landkreis.csv';
+        $localCopy = tempnam(sys_get_temp_dir(), (string) mt_rand());
 
         if ($input->getOption('url')) {
             $url = $input->getOption('url');
         }
 
-        foreach ($this->iterateItems($url) as $item) {
+        copy($url, $localCopy);
+
+        foreach ($this->iterateItems($localCopy) as $item) {
             $state = $this->findStateByName($item['bundesland']) ?? $this->createState($item['bundesland']);
             $county = $this->findCountyByName($item['landkreis'], $state) ?? $this->createCounty($item['landkreis'], $state);
             $city = $this->findCityByAgs($item['ags'], $county) ?? $this->createCity($item['ort'], $item['ags'], $item['osm_id'], $county);
             $zip = $this->findZipByCode($item['plz'], $city) ?? $this->createZip($item['plz'], $city);
         }
+
+        unlink($localCopy);
 
         return 0;
     }
