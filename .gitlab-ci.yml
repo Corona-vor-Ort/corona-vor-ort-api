@@ -1,0 +1,49 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  TARGET_DIR: "/var/www/wirvsvirus"
+
+composer install:
+  rules:
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
+      when: always
+    - if: '$CI_PIPELINE_SOURCE == "web'
+      when: manual
+  image: php:7.2
+  stage: build
+  script:
+    - composer install --no-dev --optimize-autoloader
+  artifacts:
+    untracked: true
+    paths:
+      - vendor/
+  cache:
+    paths:
+      - vendor/
+    untracked: true
+    key: ${CI_COMMIT_REF_SLUG}
+
+Deploy Staging:
+  environment:
+    name: Staging
+    url: https://wirvsvirus.marvin-naumann.de
+  tags:
+    - staging-runner
+  rules:
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
+      when: always
+    - if: '$CI_PIPELINE_SOURCE == "web'
+      when: manual
+  stage: deploy
+  dependencies:
+    - composer install
+  script:
+    - cp -a bin/ $TARGET_DIR
+    - cp -a config/ $TARGET_DIR
+    - cp -a public/ $TARGET_DIR
+    - cp -a src/ $TARGET_DIR
+    - cp -a templates/ $TARGET_DIR
+    - php7.2 bin/console cache:clear
+    - php7.2 bin/console bin/console doctrine:migrations:migrate
