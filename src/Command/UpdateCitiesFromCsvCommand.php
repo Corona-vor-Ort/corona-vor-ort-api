@@ -4,6 +4,8 @@ namespace App\Command;
 
 use App\Defaults\DatabaseIds;
 use App\Entity\Country;
+use App\Entity\County;
+use App\Entity\CountyTranslation;
 use App\Entity\Locale;
 use App\Entity\State;
 use App\Entity\StateTranslation;
@@ -67,6 +69,8 @@ class UpdateCitiesFromCsvCommand extends Command
 
         foreach ($this->iterateItems($url) as $item) {
             $state = $this->findStateByName($item['bundesland']) ?? $this->createState($item['bundesland']);
+            $county = $this->findCountyByName($item['landkreis'], $state) ?? $this->createCounty($item['landkreis'], $state);
+
             $io->table(array_keys($item), [$item]);
         }
 
@@ -117,6 +121,54 @@ DQL;
         $this->entityManager->clear();
 
         return $state;
+    }
+
+    protected function findCountyByName(string $name, State $state): ?County
+    {
+        $dql = <<<DQL
+SELECT c
+FROM App\Entity\County c
+INNER JOIN c.translations ct
+WHERE ct.locale_id = :localeId AND ct.name = :name AND c.country_id = :countryId AND c.state_id = :stateId
+DQL;
+        $country = $this->getCountry();
+        $locale = $this->getLocale();
+
+        $query = $this->entityManager
+            ->createQuery($dql)
+            ->setMaxResults(1)
+            ->setParameter('countryId', Uuid::fromString($country->getId())->getBytes())
+            ->setParameter('localeId', Uuid::fromString($locale->getId())->getBytes())
+            ->setParameter('stateId', Uuid::fromString($state->getId())->getBytes())
+            ->setParameter('name', $name);
+
+        $result = $query->getResult();
+
+        return current($result) ?: null;
+    }
+
+    protected function createCounty(string $name, State $state): County
+    {
+        $country = $this->getCountry();
+        $locale = $this->getLocale();
+
+        $county = new County();
+        $county->setCountry($country);
+        $county->setState($state);
+        $county->setCreatedAt(date_create());
+
+        $countyTranslation = new CountyTranslation();
+        $countyTranslation->setName($name);
+        $countyTranslation->setLocale($locale);
+        $countyTranslation->setCounty($county);
+        $countyTranslation->setCreatedAt(date_create());
+
+        $this->entityManager->persist($county);
+        $this->entityManager->persist($countyTranslation);
+        $this->entityManager->flush();
+        $this->entityManager->clear();
+
+        return $county;
     }
 
     protected function iterateItems(string $url): \Generator
