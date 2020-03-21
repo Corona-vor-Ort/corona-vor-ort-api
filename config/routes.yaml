@@ -15,3 +15,8 @@ states:
     type:     rest
     prefix:   /api
     resource: App\Controller\StateController
+
+counties:
+    type:     rest
+    prefix:   /api
+    resource: App\Controller\CountyController
