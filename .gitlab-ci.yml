@@ -11,8 +11,12 @@ composer install:
     - 3-deploy-auf-den-server
   image: php:7.2
   stage: build
+  before_script:
+    - apt-get update -qq -o Dpkg::Use-Pty=0
+    - apt-get install -qq -y -o Dpkg::Use-Pty=0 git
+    - curl -sS https://getcomposer.org/installer | php
   script:
-    - composer install --no-dev --optimize-autoloader
+    - ./composer.phar install --no-dev --optimize-autoloader
   artifacts:
     untracked: true
     paths:
