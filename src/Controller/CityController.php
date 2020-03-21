@@ -45,6 +45,7 @@ class CityController implements ClassResourceInterface
                 'default',
                 'city.translations',
                 'city.translations.locale',
+                'city.zipCodes',
             ]
         ]);
 

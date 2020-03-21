@@ -95,4 +95,14 @@ class CityTranslation {
 CityTranslation }-- City
 CityTranslation }-- Locale
 
+class CityZipCode {
+    + id
+    + code
+    + city_id
+    + created_at
+    + updated_at
+}
+
+CityZipCode }-- City
+
 @enduml

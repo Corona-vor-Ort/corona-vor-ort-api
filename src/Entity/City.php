@@ -48,9 +48,16 @@ class City
      */
     private $translations;
 
+    /**
+     * @Groups("city.zipCodes")
+     * @ORM\OneToMany(targetEntity="App\Entity\CityZipCode", mappedBy="city", orphanRemoval=true)
+     */
+    private $zipCodes;
+
     public function __construct()
     {
         $this->translations = new ArrayCollection();
+        $this->zipCodes = new ArrayCollection();
     }
 
     public function getAgs(): ?string
@@ -126,6 +133,37 @@ class City
             // set the owning side to null (unless already changed)
             if ($translation->getCity() === $this) {
                 $translation->setCity(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|CityZipCode[]
+     */
+    public function getZipCodes(): Collection
+    {
+        return $this->zipCodes;
+    }
+
+    public function addZipCode(CityZipCode $zipCode): self
+    {
+        if (!$this->zipCodes->contains($zipCode)) {
+            $this->zipCodes[] = $zipCode;
+            $zipCode->setCity($this);
+        }
+
+        return $this;
+    }
+
+    public function removeZipCode(CityZipCode $zipCode): self
+    {
+        if ($this->zipCodes->contains($zipCode)) {
+            $this->zipCodes->removeElement($zipCode);
+            // set the owning side to null (unless already changed)
+            if ($zipCode->getCity() === $this) {
+                $zipCode->setCity(null);
             }
         }
 
