@@ -36,5 +36,6 @@ Deploy Staging:
     - cp -a public/ $TARGET_DIR
     - cp -a src/ $TARGET_DIR
     - cp -a templates/ $TARGET_DIR
+    - cp -a vendor/ $TARGET_DIR
     - php7.2 bin/console cache:clear
     - php7.2 bin/console doctrine:migrations:migrate
