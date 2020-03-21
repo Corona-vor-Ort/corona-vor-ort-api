@@ -48,9 +48,16 @@ class County
      */
     private $translations;
 
+    /**
+     * @Groups("county.cities")
+     * @ORM\OneToMany(targetEntity="App\Entity\City", mappedBy="county", orphanRemoval=true)
+     */
+    private $cities;
+
     public function __construct()
     {
         $this->translations = new ArrayCollection();
+        $this->cities = new ArrayCollection();
     }
 
     public function getCountryId()
@@ -126,6 +133,37 @@ class County
             // set the owning side to null (unless already changed)
             if ($translation->getCounty() === $this) {
                 $translation->setCounty(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|City[]
+     */
+    public function getCities(): Collection
+    {
+        return $this->cities;
+    }
+
+    public function addCity(City $city): self
+    {
+        if (!$this->cities->contains($city)) {
+            $this->cities[] = $city;
+            $city->setCounty($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCity(City $city): self
+    {
+        if ($this->cities->contains($city)) {
+            $this->cities->removeElement($city);
+            // set the owning side to null (unless already changed)
+            if ($city->getCounty() === $this) {
+                $city->setCounty(null);
             }
         }
 

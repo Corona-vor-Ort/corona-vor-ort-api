@@ -72,4 +72,15 @@ class CountyTranslation {
 CountyTranslation }-- County
 CountyTranslation }-- Locale
 
+class City {
+    + id
+    + ags
+    + osm
+    + county_id
+    + created_at
+    + updated_at
+}
+
+City }-- County
+
 @enduml
