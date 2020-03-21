@@ -3,6 +3,8 @@
 namespace App\Command;
 
 use App\Defaults\DatabaseIds;
+use App\Entity\City;
+use App\Entity\CityTranslation;
 use App\Entity\Country;
 use App\Entity\County;
 use App\Entity\CountyTranslation;
@@ -70,6 +72,7 @@ class UpdateCitiesFromCsvCommand extends Command
         foreach ($this->iterateItems($url) as $item) {
             $state = $this->findStateByName($item['bundesland']) ?? $this->createState($item['bundesland']);
             $county = $this->findCountyByName($item['landkreis'], $state) ?? $this->createCounty($item['landkreis'], $state);
+            $city = $this->findCityByAgs($item['ags'], $county) ?? $this->createCity($item['ort'], $item['ags'], $item['osm_id'], $county);
 
             $io->table(array_keys($item), [$item]);
         }
@@ -169,6 +172,50 @@ DQL;
         $this->entityManager->clear();
 
         return $county;
+    }
+
+    protected function findCityByAgs(string $ags, County $county): ?City
+    {
+        $dql = <<<DQL
+SELECT c
+FROM App\Entity\City c
+WHERE c.ags = :ags AND c.county_id = :countyId
+DQL;
+        $locale = $this->getLocale();
+
+        $query = $this->entityManager
+            ->createQuery($dql)
+            ->setMaxResults(1)
+            ->setParameter('countyId', Uuid::fromString($county->getId())->getBytes())
+            ->setParameter('ags', $ags);
+
+        $result = $query->getResult();
+
+        return current($result) ?: null;
+    }
+
+    protected function createCity(string $name, string $ags, string $osm, County $county): City
+    {
+        $locale = $this->getLocale();
+
+        $city = new City();
+        $city->setCounty($county);
+        $city->setAgs($ags);
+        $city->setOsm($osm);
+        $city->setCreatedAt(date_create());
+
+        $cityTranslation = new CityTranslation();
+        $cityTranslation->setName($name);
+        $cityTranslation->setLocale($locale);
+        $cityTranslation->setCity($city);
+        $cityTranslation->setCreatedAt(date_create());
+
+        $this->entityManager->persist($city);
+        $this->entityManager->persist($cityTranslation);
+        $this->entityManager->flush();
+        $this->entityManager->clear();
+
+        return $city;
     }
 
     protected function iterateItems(string $url): \Generator
