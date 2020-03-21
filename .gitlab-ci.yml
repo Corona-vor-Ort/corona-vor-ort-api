@@ -24,7 +24,7 @@ composer install:
 Deploy Staging:
   environment:
     name: Staging
-    url: https://wirvsvirus.marvin-naumann.de
+    url: https://api.corona-vor-ort.de
   tags:
     - staging-runner
   only:
