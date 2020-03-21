@@ -6,6 +6,7 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "friendsofsymfony/rest-bundle": "^3.0@dev",
+        "nelmio/api-doc-bundle": "^3.6@dev",
         "ramsey/uuid-doctrine": "^1.6",
         "symfony/console": "5.0.*",
         "symfony/debug-pack": "^1.0",
