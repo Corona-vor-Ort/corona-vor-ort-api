@@ -3,15 +3,18 @@
 namespace App\Support;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 trait EntityTimestamps
 {
     /**
+     * @Groups("default")
      * @ORM\Column(type="datetime")
      */
     private $created_at;
 
     /**
+     * @Groups("default")
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $updated_at;

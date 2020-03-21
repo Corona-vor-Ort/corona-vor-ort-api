@@ -6,62 +6,103 @@ hide empty methods
 class Locale {
     + id
     + iso
+    + created_at
+    + updated_at
 }
 
-class Area {
+class Country {
+    + id
+    + created_at
+    + updated_at
+}
+
+class CountryTranslation {
+    + id
+    + country_id
+    + locale_id
+    + name
+    + created_at
+    + updated_at
+}
+
+CountryTranslation }-- Country
+CountryTranslation }-- Locale
+
+class State {
+    + id
+    + country_id
+    + created_at
+    + updated_at
+}
+
+State }-- Country
+
+class StateTranslation {
+    + id
+    + state_id
+    + locale_id
+    + name
+    + created_at
+    + updated_at
+}
+
+StateTranslation }-- State
+StateTranslation }-- Locale
+
+class County {
+    + id
+    + country_id
+    + state_id
+    + created_at
+    + updated_at
+}
+
+County }-- Country
+County }-- State
+
+class CountyTranslation {
+    + id
+    + county_id
+    + locale_id
+    + name
+    + created_at
+    + updated_at
+}
+
+CountyTranslation }-- County
+CountyTranslation }-- Locale
+
+class City {
+    + id
+    + ags
+    + osm
+    + county_id
+    + created_at
+    + updated_at
+}
+
+City }-- County
+
+class CityTranslation {
+    + id
+    + city_id
+    + locale_id
+    + name
+    + created_at
+    + updated_at
+}
+
+CityTranslation }-- City
+CityTranslation }-- Locale
+
+class CityZipCode {
     + id
     + code
-    + parent_area
+    + city_id
+    + created_at
+    + updated_at
 }
 
-Area }-- Area
-
-class AreaTranslation {
-    + id
-    + area_id
-    + locale_id
-    + name
-}
-
-AreaTranslation }-- Area
-AreaTranslation }-- Locale
-
-class DataSource {
-    + id
-    + url
-}
-
-class DataSourceTranslation {
-    + id
-    + data_source_id
-    + locale_id
-    + name
-}
-
-DataSourceTranslation }-- DataSource
-DataSourceTranslation }-- Locale
-
-class Limitation {
-    + id
-    + area_id
-    + valid_since
-    + valid_until
-}
-
-Limitation }-- Area
-
-class LimitationTranslation {
-    + id
-    + limitation_id
-    + locale_id
-    + title
-    + description
-    + data_source_id
-    + data_source_url
-}
-
-LimitationTranslation }-- Limitation
-LimitationTranslation }-- Locale
-LimitationTranslation }-- DataSource
+CityZipCode }-- City
 
 @enduml
