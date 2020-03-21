@@ -3,12 +3,14 @@
 namespace App\Support;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 trait EntityId
 {
     /**
      * @var \Ramsey\Uuid\UuidInterface
      *
+     * @Groups("default")
      * @ORM\Id
      * @ORM\Column(type="uuid", unique=true)
      * @ORM\GeneratedValue(strategy="CUSTOM")

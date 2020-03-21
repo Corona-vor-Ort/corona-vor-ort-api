@@ -28,7 +28,11 @@ class LocaleController implements ClassResourceInterface
     public function cgetAction(): Response
     {
         $locales = $this->localeRepository->findAll();
-        $localesData = $this->serializer->serialize($locales, 'json');
+        $localesData = $this->serializer->serialize($locales, 'json', [
+            'groups' => [
+                'default',
+            ]
+        ]);
 
         return Response::create($localesData);
     }
@@ -36,7 +40,11 @@ class LocaleController implements ClassResourceInterface
     public function getAction($id): Response
     {
         $locale = $this->localeRepository->find($id);
-        $localeData = $this->serializer->serialize($locale, 'json');
+        $localeData = $this->serializer->serialize($locale, 'json',  [
+            'groups' => [
+                'default',
+            ]
+        ]);
 
         return Response::create($localeData);
     }

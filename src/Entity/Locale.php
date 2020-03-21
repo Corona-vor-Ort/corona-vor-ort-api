@@ -7,6 +7,7 @@ use App\Support\EntityTimestamps;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\LocaleRepository")
@@ -17,11 +18,13 @@ class Locale
     use EntityTimestamps;
 
     /**
+     * @Groups("default")
      * @ORM\Column(type="string", length=255)
      */
     private $iso;
 
     /**
+     * @Groups("locale.countryTranslations")
      * @ORM\OneToMany(targetEntity="App\Entity\CountryTranslation", mappedBy="locale", orphanRemoval=true)
      */
     private $countryTranslations;
