@@ -18,6 +18,16 @@ class CountyRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, County::class);
     }
+    
+    public function findByArn($county_number): ?County
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.ags = :cn')
+            ->setParameter('cn', $county_number)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
 
     // /**
     //  * @return County[] Returns an array of County objects

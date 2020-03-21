@@ -131,7 +131,7 @@
         "version": "2.2.3"
     },
     "php": {
-        "version": "7.2"
+        "version": "7.4"
     },
     "phpdocumentor/reflection-common": {
         "version": "2.x-dev"
@@ -279,6 +279,12 @@
             "src/Controller/.gitignore",
             "src/Kernel.php"
         ]
+    },
+    "symfony/http-client": {
+        "version": "5.0.x-dev"
+    },
+    "symfony/http-client-contracts": {
+        "version": "2.0-dev"
     },
     "symfony/http-foundation": {
         "version": "v5.0.5"
