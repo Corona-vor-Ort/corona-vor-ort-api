@@ -5,6 +5,7 @@ namespace App\Command;
 use App\Defaults\DatabaseIds;
 use App\Entity\City;
 use App\Entity\CityTranslation;
+use App\Entity\CityZipCode;
 use App\Entity\Country;
 use App\Entity\County;
 use App\Entity\CountyTranslation;
@@ -73,8 +74,7 @@ class UpdateCitiesFromCsvCommand extends Command
             $state = $this->findStateByName($item['bundesland']) ?? $this->createState($item['bundesland']);
             $county = $this->findCountyByName($item['landkreis'], $state) ?? $this->createCounty($item['landkreis'], $state);
             $city = $this->findCityByAgs($item['ags'], $county) ?? $this->createCity($item['ort'], $item['ags'], $item['osm_id'], $county);
-
-            $io->table(array_keys($item), [$item]);
+            $zip = $this->findZipByCode($item['plz'], $city) ?? $this->createZip($item['plz'], $city);
         }
 
         return 0;
@@ -216,6 +216,39 @@ DQL;
         $this->entityManager->clear();
 
         return $city;
+    }
+
+    protected function findZipByCode(string $code, City $city): ?CityZipCode
+    {
+        $dql = <<<DQL
+SELECT z
+FROM App\Entity\CityZipCode z
+WHERE z.code = :code AND z.city_id = :cityId
+DQL;
+
+        $query = $this->entityManager
+            ->createQuery($dql)
+            ->setMaxResults(1)
+            ->setParameter('cityId', Uuid::fromString($city->getId())->getBytes())
+            ->setParameter('code', $code);
+
+        $result = $query->getResult();
+
+        return current($result) ?: null;
+    }
+
+    protected function createZip(string $code, City $city): CityZipCode
+    {
+        $zip = new CityZipCode();
+        $zip->setCity($city);
+        $zip->setCode($code);
+        $zip->setCreatedAt(date_create());
+
+        $this->entityManager->persist($zip);
+        $this->entityManager->flush();
+        $this->entityManager->clear();
+
+        return $zip;
     }
 
     protected function iterateItems(string $url): \Generator
