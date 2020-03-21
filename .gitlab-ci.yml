@@ -6,11 +6,9 @@ variables:
   TARGET_DIR: "/var/www/wirvsvirus"
 
 composer install:
-  rules:
-    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
-      when: always
-    - if: '$CI_PIPELINE_SOURCE == "web'
-      when: manual
+  only:
+    - master
+    - 3-deploy-auf-den-server
   image: php:7.2
   stage: build
   script:
@@ -31,11 +29,9 @@ Deploy Staging:
     url: https://wirvsvirus.marvin-naumann.de
   tags:
     - staging-runner
-  rules:
-    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
-      when: always
-    - if: '$CI_PIPELINE_SOURCE == "web'
-      when: manual
+  only:
+    - master
+    - 3-deploy-auf-den-server
   stage: deploy
   dependencies:
     - composer install
