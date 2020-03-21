@@ -17,11 +17,6 @@ composer install:
     untracked: true
     paths:
       - vendor/
-  cache:
-    paths:
-      - vendor/
-    untracked: true
-    key: ${CI_COMMIT_REF_SLUG}
 
 Deploy Staging:
   environment:
