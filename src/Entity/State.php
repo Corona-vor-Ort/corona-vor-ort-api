@@ -25,7 +25,7 @@ class State
 
     /**
      * @Groups("state.country")
-     * @ORM\ManyToOne(targetEntity="App\Entity\Country", inversedBy="states")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Country", inversedBy="states", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $country;

@@ -35,14 +35,14 @@ class CountyTranslation
 
     /**
      * @Groups("countyTranslation.county")
-     * @ORM\ManyToOne(targetEntity="App\Entity\County", inversedBy="translation")
+     * @ORM\ManyToOne(targetEntity="App\Entity\County", inversedBy="translation", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $county;
 
     /**
      * @Groups("countyTranslation.locale")
-     * @ORM\ManyToOne(targetEntity="App\Entity\Locale", inversedBy="countyTranslations")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Locale", inversedBy="countyTranslations", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $locale;

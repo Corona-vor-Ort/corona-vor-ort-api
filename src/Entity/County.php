@@ -31,14 +31,14 @@ class County
 
     /**
      * @Groups("county.country")
-     * @ORM\ManyToOne(targetEntity="App\Entity\Country", inversedBy="counties")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Country", inversedBy="counties", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $country;
 
     /**
      * @Groups("county.state")
-     * @ORM\ManyToOne(targetEntity="App\Entity\State", inversedBy="counties")
+     * @ORM\ManyToOne(targetEntity="App\Entity\State", inversedBy="counties", cascade={"persist"})
      */
     private $state;
 

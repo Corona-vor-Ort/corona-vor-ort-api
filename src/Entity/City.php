@@ -37,7 +37,7 @@ class City
 
     /**
      * @Groups("city.county")
-     * @ORM\ManyToOne(targetEntity="App\Entity\County", inversedBy="cities")
+     * @ORM\ManyToOne(targetEntity="App\Entity\County", inversedBy="cities", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $county;
