@@ -6,6 +6,47 @@ hide empty methods
 class Locale {
     + id
     + iso
+    + created_at
+    + updated_at
 }
+
+class Country {
+    + id
+    + created_at
+    + updated_at
+}
+
+class CountryTranslation {
+    + id
+    + country_id
+    + locale_id
+    + name
+    + created_at
+    + updated_at
+}
+
+CountryTranslation }-- Country
+CountryTranslation }-- Locale
+
+class State {
+    + id
+    + country_id
+    + created_at
+    + updated_at
+}
+
+State }-- Country
+
+class StateTranslation {
+    + id
+    + state_id
+    + locale_id
+    + name
+    + created_at
+    + updated_at
+}
+
+StateTranslation }-- State
+StateTranslation }-- Locale
 
 @enduml
