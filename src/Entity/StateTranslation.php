@@ -25,13 +25,13 @@ class StateTranslation
     private $locale_id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\State", inversedBy="translations")
+     * @ORM\ManyToOne(targetEntity="App\Entity\State", inversedBy="translations", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $state;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Locale", inversedBy="stateTranslations")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Locale", inversedBy="stateTranslations", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $locale;

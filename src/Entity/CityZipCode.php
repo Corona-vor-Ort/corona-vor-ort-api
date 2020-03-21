@@ -29,7 +29,7 @@ class CityZipCode
 
     /**
      * @Groups("cityZipCode.city")
-     * @ORM\ManyToOne(targetEntity="App\Entity\City", inversedBy="zipCodes")
+     * @ORM\ManyToOne(targetEntity="App\Entity\City", inversedBy="zipCodes", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $city;
