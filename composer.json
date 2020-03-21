@@ -5,6 +5,7 @@
         "php": "^7.2.5",
         "ext-ctype": "*",
         "ext-iconv": "*",
+        "doctrine/migrations": "^2.2",
         "friendsofsymfony/rest-bundle": "^3.0@dev",
         "nelmio/api-doc-bundle": "^3.6@dev",
         "ramsey/uuid-doctrine": "^1.6",
@@ -28,7 +29,10 @@
         "preferred-install": {
             "*": "dist"
         },
-        "sort-packages": true
+        "sort-packages": true,
+        "platform": {
+            "php": "7.2.25"
+        }
     },
     "autoload": {
         "psr-4": {

@@ -1,4 +1,7 @@
 {
+    "brick/math": {
+        "version": "0.8.14"
+    },
     "doctrine/annotations": {
         "version": "1.0",
         "recipe": {
@@ -131,7 +134,7 @@
         "version": "2.2.3"
     },
     "php": {
-        "version": "7.4"
+        "version": "7.2.25"
     },
     "phpdocumentor/reflection-common": {
         "version": "2.x-dev"
@@ -153,6 +156,9 @@
     },
     "psr/log": {
         "version": "1.1.2"
+    },
+    "ramsey/collection": {
+        "version": "1.0.1"
     },
     "ramsey/uuid": {
         "version": "3.9.3"
