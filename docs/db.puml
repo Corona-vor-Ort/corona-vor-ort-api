@@ -60,4 +60,16 @@ class County {
 County }-- Country
 County }-- State
 
+class CountyTranslation {
+    + id
+    + county_id
+    + locale_id
+    + name
+    + created_at
+    + updated_at
+}
+
+CountyTranslation }-- County
+CountyTranslation }-- Locale
+
 @enduml

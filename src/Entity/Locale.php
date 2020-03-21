@@ -35,10 +35,17 @@ class Locale
      */
     private $stateTranslations;
 
+    /**
+     * @Groups("locale.countyTranslations")
+     * @ORM\OneToMany(targetEntity="App\Entity\CountyTranslation", mappedBy="locale", orphanRemoval=true)
+     */
+    private $countyTranslations;
+
     public function __construct()
     {
         $this->countryTranslations = new ArrayCollection();
         $this->stateTranslations = new ArrayCollection();
+        $this->countyTranslations = new ArrayCollection();
     }
 
     public function getIso(): ?string
@@ -109,6 +116,37 @@ class Locale
             // set the owning side to null (unless already changed)
             if ($stateTranslation->getLocale() === $this) {
                 $stateTranslation->setLocale(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|CountyTranslation[]
+     */
+    public function getCountyTranslations(): Collection
+    {
+        return $this->countyTranslations;
+    }
+
+    public function addCountyTranslation(CountyTranslation $countyTranslation): self
+    {
+        if (!$this->countyTranslations->contains($countyTranslation)) {
+            $this->countyTranslations[] = $countyTranslation;
+            $countyTranslation->setLocale($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCountyTranslation(CountyTranslation $countyTranslation): self
+    {
+        if ($this->countyTranslations->contains($countyTranslation)) {
+            $this->countyTranslations->removeElement($countyTranslation);
+            // set the owning side to null (unless already changed)
+            if ($countyTranslation->getLocale() === $this) {
+                $countyTranslation->setLocale(null);
             }
         }
 
