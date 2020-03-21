@@ -123,3 +123,8 @@ $ bin/console make:migration
 ```
 
 Now you can check the generated migration and update your database using `bin/console doctrine:migrations:migrate`
+
+### Data seeding
+
+When you provide static data for your table then add important primary keys to the DatabaseIds class as constant.
+This way we don't interfere with each other but can provide easy way to refer to static data.
