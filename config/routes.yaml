@@ -10,3 +10,8 @@ countries:
     type:     rest
     prefix:   /api
     resource: App\Controller\CountryController
+
+states:
+    type:     rest
+    prefix:   /api
+    resource: App\Controller\StateController
