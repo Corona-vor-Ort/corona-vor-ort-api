@@ -5,3 +5,8 @@ locales:
     type:     rest
     prefix:   /api
     resource: App\Controller\LocaleController
+
+countries:
+    type:     rest
+    prefix:   /api
+    resource: App\Controller\CountryController
