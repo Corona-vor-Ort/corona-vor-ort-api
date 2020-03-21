@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "73e31e61499ac3a924e9d1bc064010b8",
+    "content-hash": "1fe9294544cadc4d310771d19b60da7d",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -2204,6 +2204,28 @@
                 "uuid"
             ],
             "time": "2020-01-27T05:09:17+00:00"
+        },
+        {
+            "name": "symfony/apache-pack",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/apache-pack.git",
+                "reference": "d7e64ecf8e5974738924b84cedc70cacc8afa47f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/apache-pack/zipball/d7e64ecf8e5974738924b84cedc70cacc8afa47f",
+                "reference": "d7e64ecf8e5974738924b84cedc70cacc8afa47f",
+                "shasum": ""
+            },
+            "type": "symfony-pack",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A pack for Apache support in Symfony",
+            "time": "2020-02-11T16:22:56+00:00"
         },
         {
             "name": "symfony/asset",
@@ -5610,6 +5632,7 @@
     "stability-flags": {
         "friendsofsymfony/rest-bundle": 20,
         "nelmio/api-doc-bundle": 20,
+        "symfony/apache-pack": 20,
         "symfony/serializer-pack": 20
     },
     "prefer-stable": false,

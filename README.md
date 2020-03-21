@@ -124,6 +124,8 @@ $ bin/console make:migration
 
 Now you can check the generated migration and update your database using `bin/console doctrine:migrations:migrate`
 
+To document the schema please update the UML file `docs/db.puml`.
+
 ### Data seeding
 
 When you provide static data for your table then add important primary keys to the DatabaseIds class as constant.

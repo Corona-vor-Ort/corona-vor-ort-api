@@ -1,0 +1,49 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  TARGET_DIR: "/var/www/wirvsvirus"
+
+composer install:
+  only:
+    - master
+    - web
+  image: php:7.2
+  stage: build
+  before_script:
+    - apt-get update -qq -o Dpkg::Use-Pty=0
+    - apt-get install -qq -y -o Dpkg::Use-Pty=0 git
+    - curl -sS https://getcomposer.org/installer | php
+  script:
+    - ./composer.phar install --no-dev --optimize-autoloader
+  artifacts:
+    untracked: true
+    paths:
+      - vendor/
+
+Deploy Staging:
+  environment:
+    name: Staging
+    url: https://api.corona-vor-ort.de
+  tags:
+    - staging-runner
+  only:
+    - master
+    - web
+  stage: deploy
+  dependencies:
+    - composer install
+  script:
+    - rm -rf $TARGET_DIR/src
+    - rm -rf $TARGET_DIR/vendor
+    - cp -a bin/ $TARGET_DIR
+    - cp -a config/ $TARGET_DIR
+    - cp -a public/ $TARGET_DIR
+    - cp -a src/ $TARGET_DIR
+    - cp -a templates/ $TARGET_DIR
+    - cp -a vendor/ $TARGET_DIR
+    - cp -a .env $TARGET_DIR
+    - cd $TARGET_DIR
+    - php7.2 bin/console cache:clear
+    - php7.2 bin/console --no-interaction doctrine:migrations:migrate
