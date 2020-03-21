@@ -17,12 +17,14 @@ class Meldungsreferenz
     private $id;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\OneToOne(targetEntity="App\Entity\Meldung", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=false)
      */
     private $origin;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\OneToOne(targetEntity="App\Entity\Meldung", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=false)
      */
     private $target;
 
@@ -31,24 +33,24 @@ class Meldungsreferenz
         return $this->id;
     }
 
-    public function getOrigin(): ?int
+    public function getOrigin(): ?Meldung
     {
         return $this->origin;
     }
 
-    public function setOrigin(int $origin): self
+    public function setOrigin(Meldung $origin): self
     {
         $this->origin = $origin;
 
         return $this;
     }
 
-    public function getTarget(): ?int
+    public function getTarget(): ?Meldung
     {
         return $this->target;
     }
 
-    public function setTarget(int $target): self
+    public function setTarget(Meldung $target): self
     {
         $this->target = $target;
 

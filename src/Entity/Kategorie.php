@@ -17,11 +17,6 @@ class Kategorie
     private $id;
 
     /**
-     * @ORM\Column(type="integer")
-     */
-    private $category_id;
-
-    /**
      * @ORM\Column(type="string", length=63)
      */
     private $name;
@@ -29,18 +24,6 @@ class Kategorie
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getCategoryId(): ?int
-    {
-        return $this->category_id;
-    }
-
-    public function setCategoryId(int $category_id): self
-    {
-        $this->category_id = $category_id;
-
-        return $this;
     }
 
     public function getName(): ?string

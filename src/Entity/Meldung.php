@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -15,11 +17,6 @@ class Meldung
      * @ORM\Column(type="integer")
      */
     private $id;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $meldung_id;
 
     /**
      * @ORM\Column(type="string", length=63, nullable=true)
@@ -81,22 +78,20 @@ class Meldung
      */
     private $meldende_stelle;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\County", mappedBy="link_meldungen")
+     */
+    private $link_counties;
+
+    public function __construct()
+    {
+        $this->link_counties = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getMeldungId(): ?int
-    {
-        return $this->meldung_id;
-    }
-
-    public function setMeldungId(int $meldung_id): self
-    {
-        $this->meldung_id = $meldung_id;
-
-        return $this;
-    }
+	}
 
     public function getBbkIdentifier(): ?string
     {
@@ -250,6 +245,34 @@ class Meldung
     public function setMeldendeStelle(?string $meldende_stelle): self
     {
         $this->meldende_stelle = $meldende_stelle;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|County[]
+     */
+    public function getLinkCounties(): Collection
+    {
+        return $this->link_counties;
+    }
+
+    public function addLinkCounty(County $linkCounty): self
+    {
+        if (!$this->link_counties->contains($linkCounty)) {
+            $this->link_counties[] = $linkCounty;
+            $linkCounty->addLinkMeldungen($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLinkCounty(County $linkCounty): self
+    {
+        if ($this->link_counties->contains($linkCounty)) {
+            $this->link_counties->removeElement($linkCounty);
+            $linkCounty->removeLinkMeldungen($this);
+        }
 
         return $this;
     }

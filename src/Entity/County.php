@@ -54,10 +54,16 @@ class County
      */
     private $cities;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Meldung", inversedBy="link_counties")
+     */
+    private $link_meldungen;
+
     public function __construct()
     {
         $this->translations = new ArrayCollection();
         $this->cities = new ArrayCollection();
+        $this->link_meldungen = new ArrayCollection();
     }
 
     public function getCountryId()
@@ -165,6 +171,32 @@ class County
             if ($city->getCounty() === $this) {
                 $city->setCounty(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Meldung[]
+     */
+    public function getLinkMeldungen(): Collection
+    {
+        return $this->link_meldungen;
+    }
+
+    public function addLinkMeldungen(Meldung $linkMeldungen): self
+    {
+        if (!$this->link_meldungen->contains($linkMeldungen)) {
+            $this->link_meldungen[] = $linkMeldungen;
+        }
+
+        return $this;
+    }
+
+    public function removeLinkMeldungen(Meldung $linkMeldungen): self
+    {
+        if ($this->link_meldungen->contains($linkMeldungen)) {
+            $this->link_meldungen->removeElement($linkMeldungen);
         }
 
         return $this;
