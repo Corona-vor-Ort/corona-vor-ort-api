@@ -76,8 +76,11 @@ class UpdateCitiesFromCsvCommand extends Command
 
         foreach ($this->iterateItems($localCopy) as $item) {
             $state = $this->findStateByName($item['bundesland']) ?? $this->createState($item['bundesland']);
-            $county = $this->findCountyByName($item['landkreis'], $state) ?? $this->createCounty($item['landkreis'], $state);
-            $city = $this->findCityByAgs($item['ags'], $county) ?? $this->createCity($item['ort'], $item['ags'], $item['osm_id'], $county);
+            $ags = $item['ags'];
+            $agsGroup = substr($ags, 0, 5);
+
+            $county = $this->findCountyByNameAgs($item['landkreis'], $agsGroup, $state) ?? $this->createCounty($item['landkreis'], $agsGroup, $state);
+            $city = $this->findCityByAgs($ags, $county) ?? $this->createCity($item['ort'], $ags, $item['osm_id'], $county);
             $zip = $this->findZipByCode($item['plz'], $city) ?? $this->createZip($item['plz'], $city);
 
             $io->progressAdvance();
@@ -135,13 +138,13 @@ DQL;
         return $state;
     }
 
-    protected function findCountyByName(string $name, State $state): ?County
+    protected function findCountyByNameAgs(string $name, string $ags, State $state): ?County
     {
         $dql = <<<DQL
 SELECT c
 FROM App\Entity\County c
 INNER JOIN c.translations ct
-WHERE ct.locale_id = :localeId AND ct.name = :name AND c.country_id = :countryId AND c.state_id = :stateId
+WHERE ct.locale_id = :localeId AND ct.name = :name AND c.ags = :ags AND c.country_id = :countryId AND c.state_id = :stateId
 DQL;
         $country = $this->getCountry();
         $locale = $this->getLocale();
@@ -152,6 +155,7 @@ DQL;
             ->setParameter('countryId', Uuid::fromString($country->getId())->getBytes())
             ->setParameter('localeId', Uuid::fromString($locale->getId())->getBytes())
             ->setParameter('stateId', Uuid::fromString($state->getId())->getBytes())
+            ->setParameter('ags', $ags)
             ->setParameter('name', $name);
 
         $result = $query->getResult();
@@ -159,13 +163,14 @@ DQL;
         return current($result) ?: null;
     }
 
-    protected function createCounty(string $name, State $state): County
+    protected function createCounty(string $name, string $ags, State $state): County
     {
         $country = $this->getCountry();
         $locale = $this->getLocale();
 
         $county = new County();
         $county->setCountry($country);
+        $county->setAgs($ags);
         $county->setState($state);
         $county->setCreatedAt(date_create());
 
