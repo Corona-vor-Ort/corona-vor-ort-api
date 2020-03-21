@@ -189,18 +189,6 @@ class Meldung
         return $this;
     }
 
-    public function getAreaDesc(): ?string
-    {
-        return $this->areaDesc;
-    }
-
-    public function setAreaDesc(string $areaDesc): self
-    {
-        $this->areaDesc = $areaDesc;
-
-        return $this;
-    }
-
     public function getAreaDescription(): ?string
     {
         return $this->area_description;

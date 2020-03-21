@@ -19,6 +19,18 @@ class MeldungRepository extends ServiceEntityRepository
         parent::__construct($registry, Meldung::class);
     }
 
+    public function findByBbkIdentifier($bbkId): ?Meldung
+    {
+        return $this->createQueryBuilder('m')
+            ->andWhere('m.bbk_identifier = :bbkId')
+            ->setParameter('bbkId', $bbkId)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
+
+    
+
     // /**
     //  * @return Meldung[] Returns an array of Meldung objects
     //  */
