@@ -19,32 +19,11 @@ class MeldungRepository extends ServiceEntityRepository
         parent::__construct($registry, Meldung::class);
     }
 
-    // /**
-    //  * @return Meldung[] Returns an array of Meldung objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function findByZipCode($zip)
     {
-        return $this->createQueryBuilder('m')
-            ->andWhere('m.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('m.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+        /**
+         * TODO: Meldungen an Hand der PLZ finden
+         */
+        return $this->findAll();
     }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?Meldung
-    {
-        return $this->createQueryBuilder('m')
-            ->andWhere('m.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

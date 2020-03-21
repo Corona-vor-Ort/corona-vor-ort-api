@@ -25,3 +25,8 @@ cities:
     type:     rest
     prefix:   /api
     resource: App\Controller\CityController
+
+messages:
+    type:     rest
+    prefix:   /api
+    resource: App\Controller\MessageController
