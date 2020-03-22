@@ -41,7 +41,7 @@ class CountyTranslation
     private $county;
 
     /**
-     * @Groups("countyTranslation.locale")
+     * @Groups("default")
      * @ORM\ManyToOne(targetEntity="App\Entity\Locale", inversedBy="countyTranslations", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
      */

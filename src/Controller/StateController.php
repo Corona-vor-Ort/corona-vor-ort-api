@@ -44,10 +44,6 @@ class StateController implements ClassResourceInterface
             'groups' => [
                 'default',
                 'state.country',
-                'state.translations',
-                'stateTranslation.locale',
-                'country.translations',
-                'countryTranslation.locale',
             ]
         ]);
 

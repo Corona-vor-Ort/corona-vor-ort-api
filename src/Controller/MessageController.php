@@ -40,8 +40,6 @@ class MessageController implements ClassResourceInterface
             'groups' => [
                 'default',
                 'meldung.keywords',
-                'meldungKeyword.translations',
-                'meldungKeywordTranslations.locale',
             ]
         ]);
 

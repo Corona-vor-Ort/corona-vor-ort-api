@@ -24,7 +24,7 @@ class MeldungKeyword
     private $meldungs;
 
     /**
-     * @Groups("meldungKeyword.translations")
+     * @Groups("default")
      * @ORM\OneToMany(targetEntity="App\Entity\MeldungKeywordTranslation", mappedBy="keyword", orphanRemoval=true)
      */
     private $translations;

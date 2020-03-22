@@ -45,13 +45,7 @@ class CountyController implements ClassResourceInterface
                 'default',
                 'county.country',
                 'county.state',
-                'county.translations',
-                'county.translations.locale',
                 'state.country',
-                'state.translations',
-                'stateTranslation.locale',
-                'country.translations',
-                'countryTranslation.locale',
             ]
         ]);
 

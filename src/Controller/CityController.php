@@ -52,8 +52,6 @@ class CityController implements ClassResourceInterface
         $itemsData = $this->serializer->serialize($items, 'json', [
             'groups' => [
                 'default',
-                'city.translations',
-                'cityTranslation.locale',
                 'city.zipCodes',
             ]
         ]);
@@ -67,8 +65,6 @@ class CityController implements ClassResourceInterface
         $itemData = $this->serializer->serialize($item, 'json', [
             'groups' => [
                 'default',
-                'city.translations',
-                'city.translations.locale',
                 'city.zipCodes',
             ]
         ]);

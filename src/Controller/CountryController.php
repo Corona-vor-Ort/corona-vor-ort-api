@@ -43,8 +43,6 @@ class CountryController implements ClassResourceInterface
         $itemData = $this->serializer->serialize($item, 'json', [
             'groups' => [
                 'default',
-                'country.translations',
-                'countryTranslation.locale',
                 'country.states',
             ]
         ]);

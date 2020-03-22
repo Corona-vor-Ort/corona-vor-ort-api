@@ -29,7 +29,7 @@ class MeldungKeywordTranslation
     private $keyword;
 
     /**
-     * @Groups("meldungKeywordTranslation.locale")
+     * @Groups("default")
      * @ORM\ManyToOne(targetEntity="App\Entity\Locale", inversedBy="meldungKeywordTranslations")
      * @ORM\JoinColumn(nullable=false)
      */

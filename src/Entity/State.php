@@ -31,7 +31,7 @@ class State
     private $country;
 
     /**
-     * @Groups("state.translations")
+     * @Groups("default")
      * @ORM\OneToMany(targetEntity="App\Entity\StateTranslation", mappedBy="state", orphanRemoval=true)
      */
     private $translations;

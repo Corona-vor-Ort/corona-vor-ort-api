@@ -49,7 +49,7 @@ class County
     private $state;
 
     /**
-     * @Groups("county.translations")
+     * @Groups("default")
      * @ORM\OneToMany(targetEntity="App\Entity\CountyTranslation", mappedBy="county", orphanRemoval=true)
      */
     private $translations;
