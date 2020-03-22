@@ -136,6 +136,9 @@
     "php": {
         "version": "7.2.25"
     },
+    "php-science/textrank": {
+        "version": "dev-master"
+    },
     "phpdocumentor/reflection-common": {
         "version": "2.x-dev"
     },
