@@ -43,6 +43,7 @@ class LocaleController implements ClassResourceInterface
         $localeData = $this->serializer->serialize($locale, 'json',  [
             'groups' => [
                 'default',
+                'detail',
             ]
         ]);
 

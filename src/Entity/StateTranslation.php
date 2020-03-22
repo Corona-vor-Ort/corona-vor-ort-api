@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Support\EntityId;
 use App\Support\EntityTimestamps;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\StateTranslationRepository")
@@ -15,28 +16,33 @@ class StateTranslation
     use EntityTimestamps;
 
     /**
+     * @Groups("default")
      * @ORM\Column(type="uuid")
      */
     private $state_id;
 
     /**
+     * @Groups("default")
      * @ORM\Column(type="uuid")
      */
     private $locale_id;
 
     /**
+     * @Groups("stateTranslation.state")
      * @ORM\ManyToOne(targetEntity="App\Entity\State", inversedBy="translations", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $state;
 
     /**
+     * @Groups("default")
      * @ORM\ManyToOne(targetEntity="App\Entity\Locale", inversedBy="stateTranslations", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $locale;
 
     /**
+     * @Groups("default")
      * @ORM\Column(type="string", length=255)
      */
     private $name;

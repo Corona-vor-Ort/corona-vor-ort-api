@@ -1,13 +1,19 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\Command;
 
+use App\Defaults\DatabaseIds;
+use App\Entity\Locale;
 use App\Entity\Meldung;
+use App\Entity\MeldungKeyword;
+use App\Entity\MeldungKeywordTranslation;
 use App\Entity\MeldungLink;
 use App\Entity\Meldungsreferenz;
 use App\Repository\CountyRepository;
+use App\Repository\MeldungKeywordRepository;
 use App\Repository\MeldungLinkRepository;
 use App\Repository\MeldungRepository;
+use App\TextSimplifier;
 use DateTime;
 use DateTimeInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -15,7 +21,6 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Throwable;
@@ -40,6 +45,11 @@ class WarnungBundCrawlerCommand extends Command
     protected $meldungLinkRepo;
 
     /**
+     * @var MeldungKeywordRepository
+     */
+    private $meldungKeywordRepo;
+
+    /**
      * @var EntityManagerInterface
      */
     protected $entityManager;
@@ -50,17 +60,30 @@ class WarnungBundCrawlerCommand extends Command
     protected $httpClient;
 
     /**
+     * @var TextSimplifier
+     */
+    private $textSimplifier;
+
+    /**
      * @var resource
      */
     protected $curl;
 
-    public function __construct(CountyRepository $countyRepo, MeldungRepository $meldungRepo, MeldungLinkRepository $meldungLinkRepo, EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        CountyRepository $countyRepo,
+        MeldungRepository $meldungRepo,
+        MeldungLinkRepository $meldungLinkRepo,
+        MeldungKeywordRepository $meldungKeywordRepo,
+        EntityManagerInterface $entityManager,
+        TextSimplifier $textSimplifier
+    ) {
         parent::__construct();
         $this->countyRepo = $countyRepo;
         $this->meldungRepo = $meldungRepo;
         $this->meldungLinkRepo = $meldungLinkRepo;
         $this->entityManager = $entityManager;
+        $this->meldungKeywordRepo = $meldungKeywordRepo;
+        $this->textSimplifier = $textSimplifier;
         $this->httpClient = HttpClient::create();
         $this->curl = curl_init();
         curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
@@ -77,7 +100,7 @@ class WarnungBundCrawlerCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        
+
         $this->parseBbkJson();
 
         $io->success('successfully updated database.');
@@ -92,6 +115,9 @@ class WarnungBundCrawlerCommand extends Command
                 $this->addMeldungReferencesForBbkEntry($entry);
                 $this->findLinksInText($meldung, $meldung->getDescription());
                 $this->findLinksInText($meldung, $meldung->getMoreInformationLink());
+                $this->findKeywordsInText($meldung, $meldung->getDescription());
+                $this->findKeywordsInText($meldung, $meldung->getAreaDescription());
+                $this->findKeywordsInText($meldung, $meldung->getHeadline());
             }
         }
     }
@@ -205,5 +231,41 @@ class WarnungBundCrawlerCommand extends Command
                 }
             }
         }
+    }
+
+    protected function findKeywordsInText(Meldung $meldung, string $text): void
+    {
+        // TODO don't expect German data
+
+        if (empty($text)) {
+            return;
+        }
+
+        foreach ($this->textSimplifier->keywords($text) as $keyword => $weight) {
+            if ($weight < 0.1) {
+                continue;
+            }
+
+            $meldungKeyword = $this->meldungKeywordRepo->findByName((string) $keyword, DatabaseIds::LOCALE_DE_DE);
+
+            if ($meldungKeyword === null) {
+                $translation = new MeldungKeywordTranslation();
+                $translation->setName((string) $keyword);
+                $translation->setLocale($this->entityManager->find(Locale::class, DatabaseIds::LOCALE_DE_DE));
+                $translation->setCreatedAt(date_create());
+
+                $meldungKeyword = new MeldungKeyword();
+                $meldungKeyword->addTranslation($translation);
+                $meldungKeyword->setCreatedAt(date_create());
+
+                $this->entityManager->persist($meldungKeyword);
+                $this->entityManager->persist($translation);
+            }
+
+            $meldung->addKeyword($meldungKeyword);
+            $this->entityManager->persist($meldungKeyword);
+        }
+
+        $this->entityManager->flush();
     }
 }

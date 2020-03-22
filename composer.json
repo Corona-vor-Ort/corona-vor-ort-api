@@ -8,6 +8,7 @@
         "doctrine/migrations": "^2.2",
         "friendsofsymfony/rest-bundle": "^3.0@dev",
         "nelmio/api-doc-bundle": "^3.6@dev",
+        "php-science/textrank": "dev-master",
         "ramsey/uuid-doctrine": "^1.6",
         "symfony/apache-pack": "dev-master",
         "symfony/asset": "5.0.*",

@@ -103,10 +103,17 @@ class Meldung
      */
     private $meldungLinks;
 
+    /**
+     * @Groups("meldung.keywords")
+     * @ORM\ManyToMany(targetEntity="App\Entity\MeldungKeyword", mappedBy="meldungs")
+     */
+    private $keywords;
+
     public function __construct()
     {
         $this->link_counties = new ArrayCollection();
         $this->meldungLinks = new ArrayCollection();
+        $this->keywords = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -313,6 +320,34 @@ class Meldung
             if ($meldungLink->getMeldung() === $this) {
                 $meldungLink->setMeldung(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|MeldungKeyword[]
+     */
+    public function getKeywords(): Collection
+    {
+        return $this->keywords;
+    }
+
+    public function addKeyword(MeldungKeyword $keyword): self
+    {
+        if (!$this->keywords->contains($keyword)) {
+            $this->keywords[] = $keyword;
+            $keyword->addMeldung($this);
+        }
+
+        return $this;
+    }
+
+    public function removeKeyword(MeldungKeyword $keyword): self
+    {
+        if ($this->keywords->contains($keyword)) {
+            $this->keywords->removeElement($keyword);
+            $keyword->removeMeldung($this);
         }
 
         return $this;

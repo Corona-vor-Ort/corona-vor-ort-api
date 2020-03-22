@@ -24,7 +24,7 @@ class Country
     private $iso;
 
     /**
-     * @Groups("country.translations")
+     * @Groups("default")
      * @ORM\OneToMany(targetEntity="App\Entity\CountryTranslation", mappedBy="country", orphanRemoval=true)
      */
     private $translations;

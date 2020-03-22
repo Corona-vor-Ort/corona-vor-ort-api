@@ -41,7 +41,7 @@ class CityTranslation
     private $city;
 
     /**
-     * @Groups("cityTranslation.locale")
+     * @Groups("default")
      * @ORM\ManyToOne(targetEntity="App\Entity\Locale", inversedBy="cityTranslations", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
      */

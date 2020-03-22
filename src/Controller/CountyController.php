@@ -43,15 +43,10 @@ class CountyController implements ClassResourceInterface
         $itemData = $this->serializer->serialize($item, 'json', [
             'groups' => [
                 'default',
+                'detail',
                 'county.country',
                 'county.state',
-                'county.translations',
-                'county.translations.locale',
                 'state.country',
-                'state.translations',
-                'stateTranslation.locale',
-                'country.translations',
-                'countryTranslation.locale',
             ]
         ]);
 
