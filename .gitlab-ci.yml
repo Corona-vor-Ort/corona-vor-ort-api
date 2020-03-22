@@ -53,7 +53,7 @@ Github Mirror:
   image: ubuntu
   only:
     - master
-  stage: deploy
+  stage: build
   before_script:
     - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client git -y )'
     - eval $(ssh-agent -s)
