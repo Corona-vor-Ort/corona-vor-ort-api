@@ -1,10 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\Repository;
 
 use App\Entity\MeldungKeyword;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Ramsey\Uuid\Uuid;
 
 /**
  * @method MeldungKeyword|null find($id, $lockMode = null, $lockVersion = null)
@@ -19,32 +20,17 @@ class MeldungKeywordRepository extends ServiceEntityRepository
         parent::__construct($registry, MeldungKeyword::class);
     }
 
-    // /**
-    //  * @return MeldungKeyword[] Returns an array of MeldungKeyword objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function findByName(string $name, string $localeId): ?MeldungKeyword
     {
-        return $this->createQueryBuilder('m')
-            ->andWhere('m.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('m.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
+        $q = $this->createQueryBuilder('mk');
 
-    /*
-    public function findOneBySomeField($value): ?MeldungKeyword
-    {
-        return $this->createQueryBuilder('m')
-            ->andWhere('m.exampleField = :val')
-            ->setParameter('val', $value)
+        return $q->innerJoin('mk.translations', 'mkt')
+            ->innerJoin('mkt.locale', 'l')
+            ->andWhere($q->expr()->eq('mkt.name', ':name'))
+            ->andWhere($q->expr()->eq('l.id', ':localeId'))
+            ->setParameter('name', $name)
+            ->setParameter('localeId', Uuid::fromString($localeId)->getBytes())
             ->getQuery()
-            ->getOneOrNullResult()
-        ;
+            ->getOneOrNullResult();
     }
-    */
 }
