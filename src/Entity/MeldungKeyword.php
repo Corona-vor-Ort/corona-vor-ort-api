@@ -23,9 +23,16 @@ class MeldungKeyword
      */
     private $meldungs;
 
+    /**
+     * @Groups("meldungKeyword.translations")
+     * @ORM\OneToMany(targetEntity="App\Entity\MeldungKeywordTranslation", mappedBy="keyword", orphanRemoval=true)
+     */
+    private $translations;
+
     public function __construct()
     {
         $this->meldungs = new ArrayCollection();
+        $this->translations = new ArrayCollection();
     }
 
     /**
@@ -49,6 +56,37 @@ class MeldungKeyword
     {
         if ($this->meldungs->contains($meldung)) {
             $this->meldungs->removeElement($meldung);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|MeldungKeywordTranslation[]
+     */
+    public function getTranslations(): Collection
+    {
+        return $this->translations;
+    }
+
+    public function addTranslation(MeldungKeywordTranslation $translation): self
+    {
+        if (!$this->translations->contains($translation)) {
+            $this->translations[] = $translation;
+            $translation->setKeyword($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTranslation(MeldungKeywordTranslation $translation): self
+    {
+        if ($this->translations->contains($translation)) {
+            $this->translations->removeElement($translation);
+            // set the owning side to null (unless already changed)
+            if ($translation->getKeyword() === $this) {
+                $translation->setKeyword(null);
+            }
         }
 
         return $this;

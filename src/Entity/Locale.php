@@ -47,12 +47,19 @@ class Locale
      */
     private $cityTranslations;
 
+    /**
+     * @Groups("locale.meldungKeywordTranslations")
+     * @ORM\OneToMany(targetEntity="App\Entity\MeldungKeywordTranslation", mappedBy="locale", orphanRemoval=true)
+     */
+    private $meldungKeywordTranslations;
+
     public function __construct()
     {
         $this->countryTranslations = new ArrayCollection();
         $this->stateTranslations = new ArrayCollection();
         $this->countyTranslations = new ArrayCollection();
         $this->cityTranslations = new ArrayCollection();
+        $this->meldungKeywordTranslations = new ArrayCollection();
     }
 
     public function getIso(): ?string
@@ -185,6 +192,37 @@ class Locale
             // set the owning side to null (unless already changed)
             if ($cityTranslation->getLocale() === $this) {
                 $cityTranslation->setLocale(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|MeldungKeywordTranslation[]
+     */
+    public function getMeldungKeywordTranslations(): Collection
+    {
+        return $this->meldungKeywordTranslations;
+    }
+
+    public function addMeldungKeywordTranslation(MeldungKeywordTranslation $meldungKeywordTranslation): self
+    {
+        if (!$this->meldungKeywordTranslations->contains($meldungKeywordTranslation)) {
+            $this->meldungKeywordTranslations[] = $meldungKeywordTranslation;
+            $meldungKeywordTranslation->setLocale($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMeldungKeywordTranslation(MeldungKeywordTranslation $meldungKeywordTranslation): self
+    {
+        if ($this->meldungKeywordTranslations->contains($meldungKeywordTranslation)) {
+            $this->meldungKeywordTranslations->removeElement($meldungKeywordTranslation);
+            // set the owning side to null (unless already changed)
+            if ($meldungKeywordTranslation->getLocale() === $this) {
+                $meldungKeywordTranslation->setLocale(null);
             }
         }
 
