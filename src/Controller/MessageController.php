@@ -26,10 +26,10 @@ class MessageController implements ClassResourceInterface
         $this->serializer = $serializer;
     }
 
-    public function cgetAction() : Response
+    public function cgetAction(?string $zip = null) : Response
     {
         $request = Request::createFromGlobals();
-        $zip = $request->get('zip');
+
         if (!empty($zip)) {
             $messages = $this->entityRepository->findByZipCode($zip);
         } else {
