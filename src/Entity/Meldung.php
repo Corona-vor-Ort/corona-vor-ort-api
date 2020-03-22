@@ -98,9 +98,15 @@ class Meldung
      */
     private $link_counties;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\MeldungLink", mappedBy="meldung", orphanRemoval=true)
+     */
+    private $meldungLinks;
+
     public function __construct()
     {
         $this->link_counties = new ArrayCollection();
+        $this->meldungLinks = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -275,6 +281,38 @@ class Meldung
         if ($this->link_counties->contains($linkCounty)) {
             $this->link_counties->removeElement($linkCounty);
             $linkCounty->removeLinkMeldungen($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @Groups("default")
+     * @return Collection|MeldungLink[]
+     */
+    public function getMeldungLinks(): Collection
+    {
+        return $this->meldungLinks;
+    }
+
+    public function addMeldungLink(MeldungLink $meldungLink): self
+    {
+        if (!$this->meldungLinks->contains($meldungLink)) {
+            $this->meldungLinks[] = $meldungLink;
+            $meldungLink->setMeldung($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMeldungLink(MeldungLink $meldungLink): self
+    {
+        if ($this->meldungLinks->contains($meldungLink)) {
+            $this->meldungLinks->removeElement($meldungLink);
+            // set the owning side to null (unless already changed)
+            if ($meldungLink->getMeldung() === $this) {
+                $meldungLink->setMeldung(null);
+            }
         }
 
         return $this;
