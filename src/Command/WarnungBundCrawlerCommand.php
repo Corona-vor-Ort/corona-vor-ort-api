@@ -115,9 +115,9 @@ class WarnungBundCrawlerCommand extends Command
                 $this->addMeldungReferencesForBbkEntry($entry);
                 $this->findLinksInText($meldung, $meldung->getDescription());
                 $this->findLinksInText($meldung, $meldung->getMoreInformationLink());
-                $this->findKeywordsInText($meldung, $meldung->getDescription());
-                $this->findKeywordsInText($meldung, $meldung->getAreaDescription());
-                $this->findKeywordsInText($meldung, $meldung->getHeadline());
+                $this->findKeywordsInText($meldung, strip_tags($meldung->getDescription()));
+                $this->findKeywordsInText($meldung, strip_tags($meldung->getAreaDescription()));
+                $this->findKeywordsInText($meldung, strip_tags($meldung->getHeadline()));
             }
         }
     }
