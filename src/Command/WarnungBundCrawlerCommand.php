@@ -52,67 +52,93 @@ class WarnungBundCrawlerCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         
-        $client = HttpClient::create();
-        $content = $client->request('GET', 'https://warnung.bund.de/bbk.mowas/gefahrendurchsagen.json')->toArray();
-        
-        foreach ($content as $entry) {
-            if ($this->meldungRepo->findByBbkIdentifier($entry['identifier']) !== null) {
-                continue;
-            }
-
-            $meldung = new Meldung();
-            $meldung->setBbkIdentifier($entry['identifier']);
-            $meldung->setSent(DateTime::createFromFormat(DateTimeInterface::ATOM, $entry['sent']));
-            $meldung->setMessageType($entry['msgType']);
-            $meldung->setHeadline($entry['info'][0]['headline']);
-            $meldung->setDescription($entry['info'][0]['description']);
-            if (array_key_exists('instruction', $entry['info'][0])) {
-                $meldung->setInstruction($entry['info'][0]['instruction']);
-            }
-            if (array_key_exists('web', $entry['info'][0])) {
-                $meldung->setMoreInformationLink($entry['info'][0]['web']);
-            }
-            if (array_key_exists('contact', $entry['info'][0])) {
-                $meldung->setContact($entry['info'][0]['contact']);
-            }
-            $meldung->setAreaDescription($entry['info'][0]['area'][0]['areaDesc']);
-            $meldung->setSeverity(array('Minor' => 0, 'Severe' => 1, 'Extreme' => 2)[$entry['info'][0]['severity']]);
-            $meldung->setLanguage($entry['info'][0]['language']);
-
-            foreach($entry['info'][0]['parameter'] as $parameter) {
-                if ($parameter['valueName'] == "sender_langname") {
-                    $meldung->setMeldendeStelle($parameter['value']);
-                    break;
-                }
-            }
-
-            foreach ($entry['info'][0]['area'][0]['geocode'] as $county_arn) {
-                $county = $this->countyRepo->findByArn(substr($county_arn['value'], 0, 5));
-                if ($county !== null) {
-                    $meldung->addLinkCounty($county);
-                }
-            }
-            
-            $this->entityManager->persist($meldung);
-            $this->entityManager->flush();
-            
-            if (array_key_exists('references', $entry)) {
-                $origin = $this->meldungRepo->findByBbkIdentifier($entry['identifier']);
-                
-                foreach(explode(",", str_replace(" ", ",", $entry['references'])) as $ref) {
-                    $target = $this->meldungRepo->findByBbkIdentifier($ref);
-                    if ($target !== null) {
-                        $meldungsreferenz = new Meldungsreferenz();
-                        $meldungsreferenz->setOrigin($origin);
-                        $meldungsreferenz->setTarget($target);
-                        $this->entityManager->persist($meldungsreferenz);
-                        $this->entityManager->flush();
-                    }
-                }
-            }
-        }
+        $this->parseBbkJson();
 
         $io->success('successfully updated database.');
         return 0;
+    }
+
+    protected function parseBbkJson()
+    {
+        foreach ($this->getBbkData() as $entry) {
+            if ($this->meldungRepo->findByBbkIdentifier($entry['identifier']) == null && $this->relatedToCovid19($entry)) {
+                $this->addMeldungForBbkEntry($entry);
+                $this->addMeldungReferencesForBbkEntry($entry);
+            }
+        }
+    }
+
+    protected function getBbkData()
+    {
+        $client = HttpClient::create();
+        return $client->request('GET', 'https://warnung.bund.de/bbk.mowas/gefahrendurchsagen.json')->toArray();
+    }
+
+    protected function relatedToCovid19($entry)
+    {
+        $keywords = json_decode(file_get_contents("res/coronaKeywords.json"));
+        $regex = "/.*(" . implode("|", $keywords) . ").*/";
+        return (
+            preg_match($regex, strtolower($entry['info'][0]['headline']))
+            || preg_match($regex, strtolower($entry['info'][0]['description']))
+            || (array_key_exists('instruction', $entry['info'][0]) ? preg_match($regex, strtolower($entry['info'][0]['instruction'])) : false)
+        );
+    }
+
+    protected function addMeldungForBbkEntry($entry)
+    {
+        $meldung = new Meldung();
+        $meldung->setBbkIdentifier($entry['identifier']);
+        $meldung->setSent(DateTime::createFromFormat(DateTimeInterface::ATOM, $entry['sent']));
+        $meldung->setMessageType($entry['msgType']);
+        $meldung->setHeadline($entry['info'][0]['headline']);
+        $meldung->setDescription($entry['info'][0]['description']);
+        if (array_key_exists('instruction', $entry['info'][0])) {
+            $meldung->setInstruction($entry['info'][0]['instruction']);
+        }
+        if (array_key_exists('web', $entry['info'][0])) {
+            $meldung->setMoreInformationLink($entry['info'][0]['web']);
+        }
+        if (array_key_exists('contact', $entry['info'][0])) {
+            $meldung->setContact($entry['info'][0]['contact']);
+        }
+        $meldung->setAreaDescription($entry['info'][0]['area'][0]['areaDesc']);
+        $meldung->setSeverity(array('Minor' => 0, 'Severe' => 1, 'Extreme' => 2)[$entry['info'][0]['severity']]);
+        $meldung->setLanguage($entry['info'][0]['language']);
+
+        foreach($entry['info'][0]['parameter'] as $parameter) {
+            if ($parameter['valueName'] == "sender_langname") {
+                $meldung->setMeldendeStelle($parameter['value']);
+                break;
+            }
+        }
+
+        foreach ($entry['info'][0]['area'][0]['geocode'] as $county_arn) {
+            $county = $this->countyRepo->findByArn(substr($county_arn['value'], 0, 5));
+            if ($county !== null) {
+                $meldung->addLinkCounty($county);
+            }
+        }
+        
+        $this->entityManager->persist($meldung);
+        $this->entityManager->flush();
+    }
+
+    protected function addMeldungReferencesForBbkEntry($entry)
+    {
+        if (array_key_exists('references', $entry)) {
+            $origin = $this->meldungRepo->findByBbkIdentifier($entry['identifier']);
+            
+            foreach(explode(",", str_replace(" ", ",", $entry['references'])) as $ref) {
+                $target = $this->meldungRepo->findByBbkIdentifier($ref);
+                if ($target !== null) {
+                    $meldungsreferenz = new Meldungsreferenz();
+                    $meldungsreferenz->setOrigin($origin);
+                    $meldungsreferenz->setTarget($target);
+                    $this->entityManager->persist($meldungsreferenz);
+                    $this->entityManager->flush();
+                }
+            }
+        }
     }
 }
