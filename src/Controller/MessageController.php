@@ -39,6 +39,9 @@ class MessageController implements ClassResourceInterface
         $itemsData = $this->serializer->serialize($messages, 'json', [
             'groups' => [
                 'default',
+                'meldung.keywords',
+                'meldungKeyword.translations',
+                'meldungKeywordTranslations.locale',
             ]
         ]);
 
