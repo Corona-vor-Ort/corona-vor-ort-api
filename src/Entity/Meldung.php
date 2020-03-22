@@ -59,7 +59,7 @@ class Meldung
     private $contact;
 
     /**
-     * @ORM\Column(type="string", length=63)
+     * @ORM\Column(type="text")
      */
     private $area_description;
 
