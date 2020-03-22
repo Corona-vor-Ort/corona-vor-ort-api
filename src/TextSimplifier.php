@@ -9,15 +9,24 @@ class TextSimplifier
 {
     public function summarize(string $input): string
     {
+        return implode(PHP_EOL, $this->getAlgo()->summarizeTextBasic($input));
+    }
+
+    public function highlights(string $input): string
+    {
+        return implode(PHP_EOL, $this->getAlgo()->getHighlights($input));
+    }
+
+    public function keywords(string $input): array
+    {
+        return $this->getAlgo()->getOnlyKeyWords($input);
+    }
+
+    protected function getAlgo(): TextRankFacade
+    {
         $api = new TextRankFacade();
-        $stopWords = new German();
-        $api->setStopWords($stopWords);
+        $api->setStopWords(new German());
 
-        // TODO decide what to do
-        $result = $api->getOnlyKeyWords($input);
-
-        $result = $api->getHighlights($input);
-
-        return implode(PHP_EOL, $api->summarizeTextBasic($input));
+        return $api;
     }
 }
