@@ -2,19 +2,23 @@
 
 namespace App\Command;
 
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\HttpClient\HttpClient;
-use Doctrine\ORM\EntityManagerInterface;
-use App\Repository\CountyRepository;
-use App\Repository\MeldungRepository;
 use App\Entity\Meldung;
+use App\Entity\MeldungLink;
 use App\Entity\Meldungsreferenz;
+use App\Repository\CountyRepository;
+use App\Repository\MeldungLinkRepository;
+use App\Repository\MeldungRepository;
 use DateTime;
 use DateTimeInterface;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Throwable;
 
 class WarnungBundCrawlerCommand extends Command
 {
@@ -22,25 +26,37 @@ class WarnungBundCrawlerCommand extends Command
 
     /**
      * @var CountyRepository
-    */
+     */
     protected $countyRepo;
 
     /**
      * @var MeldungRepository
-    */
+     */
     protected $meldungRepo;
+
+    /**
+     * @var MeldungLinkRepository
+     */
+    protected $meldungLinkRepo;
 
     /**
      * @var EntityManagerInterface
      */
     protected $entityManager;
 
-    public function __construct(CountyRepository $countyRepo, MeldungRepository $meldungRepo, EntityManagerInterface $entityManager)
+    /**
+     * @var HttpClientInterface
+     */
+    protected $httpClient;
+
+    public function __construct(CountyRepository $countyRepo, MeldungRepository $meldungRepo, MeldungLinkRepository $meldungLinkRepo, EntityManagerInterface $entityManager)
     {
         parent::__construct();
         $this->countyRepo = $countyRepo;
         $this->meldungRepo = $meldungRepo;
+        $this->meldungLinkRepo = $meldungLinkRepo;
         $this->entityManager = $entityManager;
+        $this->httpClient = HttpClient::create();
     }
 
     protected function configure()
@@ -62,21 +78,22 @@ class WarnungBundCrawlerCommand extends Command
     {
         foreach ($this->getBbkData() as $entry) {
             if ($this->meldungRepo->findByBbkIdentifier($entry['identifier']) == null && $this->relatedToCovid19($entry)) {
-                $this->addMeldungForBbkEntry($entry);
+                $meldung = $this->addMeldungForBbkEntry($entry);
                 $this->addMeldungReferencesForBbkEntry($entry);
+                $this->findLinksInText($meldung, $meldung->getDescription());
+                $this->findLinksInText($meldung, $meldung->getMoreInformationLink());
             }
         }
     }
 
     protected function getBbkData()
     {
-        $client = HttpClient::create();
-        return $client->request('GET', 'https://warnung.bund.de/bbk.mowas/gefahrendurchsagen.json')->toArray();
+        return $content = $this->httpClient->request('GET', 'https://warnung.bund.de/bbk.mowas/gefahrendurchsagen.json')->toArray();
     }
 
     protected function relatedToCovid19($entry)
     {
-        $keywords = json_decode(file_get_contents("res/coronaKeywords.json"));
+        $keywords = json_decode(file_get_contents("res" . DIRECTORY_SEPARATOR . "coronaKeywords.json"));
         $regex = "/.*(" . implode("|", $keywords) . ").*/";
         return (
             preg_match($regex, strtolower($entry['info'][0]['headline']))
@@ -119,16 +136,18 @@ class WarnungBundCrawlerCommand extends Command
                 $meldung->addLinkCounty($county);
             }
         }
-        
+
         $this->entityManager->persist($meldung);
         $this->entityManager->flush();
+
+        return $meldung;
     }
 
     protected function addMeldungReferencesForBbkEntry($entry)
     {
         if (array_key_exists('references', $entry)) {
             $origin = $this->meldungRepo->findByBbkIdentifier($entry['identifier']);
-            
+
             foreach(explode(",", str_replace(" ", ",", $entry['references'])) as $ref) {
                 $target = $this->meldungRepo->findByBbkIdentifier($ref);
                 if ($target !== null) {
@@ -137,6 +156,54 @@ class WarnungBundCrawlerCommand extends Command
                     $meldungsreferenz->setTarget($target);
                     $this->entityManager->persist($meldungsreferenz);
                     $this->entityManager->flush();
+                }
+            }
+        }
+    }
+
+    /**
+     * @param Meldung $meldung
+     * @param string $text
+     */
+    protected function findLinksInText($meldung, $text)
+    {
+        if (empty($text)) {
+            return;
+        }
+        $linkCheck = '/((https?:\/\/)?(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0}[a-z0-9])(:?\d*)\/?([a-z_\/0-9\-#\+\,.]*)\??([\w\=\&\.]*)/i';
+        $linkMatches = [];
+        $result = preg_match_all($linkCheck, $text, $linkMatches);
+        if ($result > 0) {
+            foreach ($linkMatches[0] as $link) {
+                if (!empty($link)) {
+                    $isLinkCallable = false;
+                    if (preg_match('/^https?:\/\//i', $link)) {
+                        try {
+                            $isLinkCallable = ($this->httpClient->request('GET', $link) !== 404);
+                        } catch (Throwable $exception) {
+                            $isLinkCallable = false;
+                        }
+                    } else {
+                        foreach (['https://', 'http://'] as $protocol) {
+                            try {
+                                $isLinkCallable = ($this->httpClient->request('GET', $protocol . $link) !== 404);
+                            } catch (Throwable $exception) {
+                                $isLinkCallable = false;
+                            }
+                        }
+                    }
+
+                    if (!$isLinkCallable) {
+                        continue;
+                    }
+
+                    if (!is_object($this->meldungLinkRepo->findByLinkForMeldung($link, $meldung))) {
+                        $meldungLink = new MeldungLink();
+                        $meldungLink->setMeldung($meldung);
+                        $meldungLink->setLink($link);
+                        $this->entityManager->persist($meldungLink);
+                        $this->entityManager->flush();
+                    }
                 }
             }
         }
