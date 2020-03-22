@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\Repository;
 
@@ -21,9 +21,14 @@ class MeldungRepository extends ServiceEntityRepository
 
     public function findByZipCode($zip)
     {
-        /**
-         * TODO: Meldungen an Hand der PLZ finden
-         */
-        return $this->findAll();
+        $q = $this->createQueryBuilder('m');
+        $q->select('m')
+            ->innerJoin('m.link_counties', 'co')
+            ->innerJoin('co.cities', 'ci')
+            ->innerJoin('ci.zipCodes', 'z')
+            ->where($q->expr()->like('z.code', ':zip'))
+            ->setParameter('zip', $zip . '%');
+
+        return $q->getQuery()->getResult();
     }
 }
