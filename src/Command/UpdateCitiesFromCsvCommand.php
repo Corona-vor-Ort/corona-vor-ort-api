@@ -135,7 +135,8 @@ DQL;
         $this->entityManager->flush();
         $this->entityManager->clear();
 
-        return $state;
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
+        return $this->entityManager->find(State::class, $state->getId());
     }
 
     protected function findCountyByNameAgs(string $name, string $ags, State $state): ?County
@@ -185,7 +186,8 @@ DQL;
         $this->entityManager->flush();
         $this->entityManager->clear();
 
-        return $county;
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
+        return $this->entityManager->find(County::class, $county->getId());
     }
 
     protected function findCityByAgs(string $ags, County $county): ?City
@@ -229,7 +231,8 @@ DQL;
         $this->entityManager->flush();
         $this->entityManager->clear();
 
-        return $city;
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
+        return $this->entityManager->find(City::class, $city->getId());
     }
 
     protected function findZipByCode(string $code, City $city): ?CityZipCode
