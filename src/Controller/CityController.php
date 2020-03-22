@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\CityRepository;
+use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -31,6 +32,29 @@ class CityController implements ClassResourceInterface
         $itemsData = $this->serializer->serialize($items, 'json', [
             'groups' => [
                 'default',
+            ]
+        ]);
+
+        return Response::create($itemsData);
+    }
+
+    /**
+     * @Rest\Get("/cities/by_zip/{zip}")
+     */
+    public function getByZipAction(string $zip): Response
+    {
+        $q = $this->entityRepository->createQueryBuilder('c');
+        $q->innerJoin('c.zipCodes', 'z')
+            ->where($q->expr()->like('z.code', ':zip'))
+            ->setParameter('zip', $zip . '%');
+
+        $items = $q->getQuery()->getResult();
+        $itemsData = $this->serializer->serialize($items, 'json', [
+            'groups' => [
+                'default',
+                'city.translations',
+                'cityTranslation.locale',
+                'city.zipCodes',
             ]
         ]);
 

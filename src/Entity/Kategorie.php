@@ -1,8 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\KategorieRepository")
@@ -10,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Kategorie
 {
     /**
+     * @Groups("default")
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
@@ -17,6 +19,7 @@ class Kategorie
     private $id;
 
     /**
+     * @Groups("default")
      * @ORM\Column(type="string", length=63)
      */
     private $name;

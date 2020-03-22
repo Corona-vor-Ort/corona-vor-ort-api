@@ -1,8 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\LinkMeldungenKategorienRepository")
@@ -10,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 class LinkMeldungenKategorien
 {
     /**
+     * @Groups("default")
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
@@ -17,17 +19,20 @@ class LinkMeldungenKategorien
     private $id;
 
     /**
+     * @Groups("default")
      * @ORM\Column(type="text", nullable=true)
      */
     private $description;
 
     /**
+     * @Groups("linkMeldungenKategorien.meldung")
      * @ORM\OneToOne(targetEntity="App\Entity\Meldung", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $meldung_id;
 
     /**
+     * @Groups("linkMeldungenKategorien.kategorie")
      * @ORM\OneToOne(targetEntity="App\Entity\Kategorie", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
      */
