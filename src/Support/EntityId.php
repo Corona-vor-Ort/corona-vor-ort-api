@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 trait EntityId
@@ -18,8 +19,8 @@ trait EntityId
      */
     protected $id;
 
-    public function getId()
+    public function getId(): string
     {
-        return $this->id;
+        return (string) $this->id;
     }
 }
