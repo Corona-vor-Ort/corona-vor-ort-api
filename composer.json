@@ -21,7 +21,8 @@
         "symfony/orm-pack": "^1.0",
         "symfony/serializer-pack": "dev-master",
         "symfony/twig-pack": "^1.0",
-        "symfony/yaml": "5.0.*"
+        "symfony/yaml": "5.0.*",
+        "ext-curl": "*"
     },
     "require-dev": {
     },

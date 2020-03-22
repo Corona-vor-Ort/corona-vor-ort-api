@@ -49,6 +49,11 @@ class WarnungBundCrawlerCommand extends Command
      */
     protected $httpClient;
 
+    /**
+     * @var resource
+     */
+    protected $curl;
+
     public function __construct(CountyRepository $countyRepo, MeldungRepository $meldungRepo, MeldungLinkRepository $meldungLinkRepo, EntityManagerInterface $entityManager)
     {
         parent::__construct();
@@ -57,6 +62,11 @@ class WarnungBundCrawlerCommand extends Command
         $this->meldungLinkRepo = $meldungLinkRepo;
         $this->entityManager = $entityManager;
         $this->httpClient = HttpClient::create();
+        $this->curl = curl_init();
+        curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($this->curl, CURLOPT_VERBOSE, 0);
+        curl_setopt($this->curl, CURLOPT_HEADER, true);
+        curl_setopt($this->curl, CURLOPT_NOBODY, true);
     }
 
     protected function configure()
@@ -176,24 +186,12 @@ class WarnungBundCrawlerCommand extends Command
         if ($result > 0) {
             foreach ($linkMatches[0] as $link) {
                 if (!empty($link)) {
-                    $isLinkCallable = false;
-                    if (preg_match('/^https?:\/\//i', $link)) {
-                        try {
-                            $isLinkCallable = ($this->httpClient->request('GET', $link) !== 404);
-                        } catch (Throwable $exception) {
-                            $isLinkCallable = false;
-                        }
-                    } else {
-                        foreach (['https://', 'http://'] as $protocol) {
-                            try {
-                                $isLinkCallable = ($this->httpClient->request('GET', $protocol . $link) !== 404);
-                            } catch (Throwable $exception) {
-                                $isLinkCallable = false;
-                            }
-                        }
-                    }
+                    curl_setopt($this->curl, CURLOPT_URL, $link);
+                    curl_exec($this->curl);
+                    $error = curl_errno($this->curl);
+                    $status = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
 
-                    if (!$isLinkCallable) {
+                    if ($error !== 0 || $status === 0 || $status === 404) {
                         continue;
                     }
 
