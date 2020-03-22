@@ -8,13 +8,13 @@ use Symfony\Component\Serializer\Annotation\Groups;
 trait EntityTimestamps
 {
     /**
-     * @Groups("default")
+     * @Groups("detail")
      * @ORM\Column(type="datetime")
      */
     private $created_at;
 
     /**
-     * @Groups("default")
+     * @Groups("detail")
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $updated_at;
