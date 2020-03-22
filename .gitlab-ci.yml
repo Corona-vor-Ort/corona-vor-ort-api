@@ -48,3 +48,17 @@ Deploy Staging:
     - cd $TARGET_DIR
     - php7.2 bin/console cache:clear
     - php7.2 bin/console --no-interaction doctrine:migrations:migrate
+
+Github Mirror:
+  image: ubuntu
+  before_script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client git -y )'
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan github.com >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - git remote add github git@github.com:Corona-vor-Ort/corona-vor-ort-api.git
+    - git push --force master
