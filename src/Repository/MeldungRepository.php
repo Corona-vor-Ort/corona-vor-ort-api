@@ -25,38 +25,18 @@ class MeldungRepository extends ServiceEntityRepository
             ->andWhere('m.bbk_identifier = :bbkId')
             ->setParameter('bbkId', $bbkId)
             ->getQuery()
-            ->getOneOrNullResult()
-        ;
+            ->getOneOrNullResult();
     }
 
-    
-
-    // /**
-    //  * @return Meldung[] Returns an array of Meldung objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function findByZipCode($zip)
     {
-        return $this->createQueryBuilder('m')
-            ->andWhere('m.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('m.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+        $q = $this->createQueryBuilder('m');
+        $q->select('m')
+            ->innerJoin('m.link_counties', 'co')
+            ->innerJoin('co.cities', 'ci')
+            ->innerJoin('ci.zipCodes', 'z')
+            ->where($q->expr()->like('z.code', ':zip'))
+            ->setParameter('zip', $zip . '%');
+        return $q->getQuery()->getResult();
     }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?Meldung
-    {
-        return $this->createQueryBuilder('m')
-            ->andWhere('m.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\MeldungRepository")
@@ -12,6 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Meldung
 {
     /**
+     * @Groups("default")
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
@@ -19,66 +21,79 @@ class Meldung
     private $id;
 
     /**
+     * @Groups("default"))
      * @ORM\Column(type="string", length=63, nullable=true)
      */
     private $bbk_identifier;
 
     /**
+     * @Groups("default")
      * @ORM\Column(type="datetime")
      */
     private $sent;
 
     /**
+     * @Groups("default")
      * @ORM\Column(type="string", length=31)
      */
     private $messageType;
 
     /**
+     * @Groups("default")
      * @ORM\Column(type="string", length=511)
      */
     private $headline;
 
     /**
+     * @Groups("default")
      * @ORM\Column(type="text")
      */
     private $description;
 
     /**
+     * @Groups("default")
      * @ORM\Column(type="text", nullable=true)
      */
     private $instruction;
 
     /**
+     * @Groups("default")
      * @ORM\Column(type="string", length=511, nullable=true)
      */
     private $more_information_link;
 
     /**
+     * @Groups("default")
      * @ORM\Column(type="text", nullable=true)
      */
     private $contact;
 
     /**
+     * @Groups("default")
      * @ORM\Column(type="text")
      */
     private $area_description;
 
     /**
+     * @Groups("default")
      * @ORM\Column(type="integer", nullable=true)
      */
     private $severity;
 
     /**
+     * @Groups("default")
      * @ORM\Column(type="string", length=7)
      */
     private $language;
 
     /**
+     * @Groups("default")
      * @ORM\Column(type="string", length=127, nullable=true)
      */
     private $meldende_stelle;
 
     /**
+     * @Groups("meldung.linkCounties")
      * @ORM\ManyToMany(targetEntity="App\Entity\County", mappedBy="link_meldungen")
      */
     private $link_counties;
