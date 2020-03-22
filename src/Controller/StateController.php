@@ -45,6 +45,7 @@ class StateController implements ClassResourceInterface
                 'default',
                 'detail',
                 'state.country',
+                'state.counties',
             ]
         ]);
 
